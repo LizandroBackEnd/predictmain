@@ -1,0 +1,115 @@
+---
+alwaysApply: true
+---
+
+# UNIVERSAL PYTHON STRICT RULES
+
+## 1. TYPE SAFETY AND PEP 484 ANNOTATIONS
+- Absolute prohibition of untyped function parameters and missing return type annotations. Every public and internal function, class method, and variable declaration MUST have explicit type annotations.
+- Modern type syntax compliance: Mandate PEP 604 union types (`X | Y` instead of `Union[X, Y]`)  and PEP 585 generic collection aliases (`list[str]`, `dict[str, Any]`, `tuple[int,...]`) instead of legacy capitalized aliases (`List[str]`, `Dict[str, Any]`).
+- Strict `Any` avoidance: Absolute prohibition of implicit or ungrounded `Any`. When polymorphism or generic capabilities are required, enforce explicit `TypeVar`, `Protocol` structural subtyping, or bounded type expressions.
+- Variable and attribute typing: All module-level constants, class attributes, and instance variables MUST be annotated at declaration.
+
+## 2. DATA MODELING AND VALIDATION (PYDANTIC V2)
+- Domain entities and Data Transfer Objects (DTOs) MUST inherit from Pydantic `BaseModel` using explicit `Field(...)` specs, constraints (`gt`, `le`, `min_length`, `pattern`), and field descriptions.
+- Model configuration hardening: Enforce explicit model configurations `model_config = ConfigDict(strict=True, extra="forbid", str_strip_whitespace=True)` to prevent unvalidated attribute injections and silent type coercions.
+- Custom field and model validators: Enforce `@field_validator` and `@model_validator` decorators with explicit `mode="after"` or `mode="before"` annotations and strict return types.
+- Immutability for value objects: Mandate `frozen=True` inside `ConfigDict` for domain entities and value objects to guarantee runtime thread-safety and prevent unexpected state mutations.
+
+## 3. CODE STYLE, FORMATTING, AND LINTING (PEP 8 & RUFF)
+- Formatting and linting standards: Code formatting MUST strictly conform to Ruff rules (88-100 character line limit, double quotes for string literals, and automated import sorting via Ruff/isort).
+- Exception handling rigor: Absolute prohibition of bare `except:` clauses or catching generic `BaseException`. Always catch explicit exception subclasses (e.g., `except ValueError as err:`) and limit `try` block scope to the minimum necessary lines.
+- Default argument safety: Absolute prohibition of mutable default arguments (e.g., `def fn(items: list[str] = [])`) in function signatures. Always set default parameters to `None` and initialize mutables inside the function body.
+- Function and variable naming: Follow PEP 8 naming conventions (`snake_case` for functions, methods, and variables; `PascalCase` for classes and exceptions; `UPPER_CASE` for module constants).
+
+## 4. RESOURCE MANAGEMENT AND TESTING (PYTEST)
+- Deterministic resource management: All I/O, network sockets, file handlers, and database sessions MUST be managed deterministically using context managers (`with` or `async with`) or explicit cleanup blocks.
+- Pytest modularization: Tests MUST be modularized using strongly typed fixtures declared inside `conftest.py`. Prohibit monolithic test functions; mandate `@pytest.mark.parametrize` for multi-case edge validations.
+- Assertion clarity: Enforce explicit Pytest assertions leveraging detailed introspections. Prohibit bare assertions on complex objects without descriptive failure contexts or `pytest.raises` exception matching.
+
+## 5. STRICT PROHIBITIONS AND ANTI-PATTERNS (DO'S AND DON'TS)
+
+### Mutable Default Arguments in Function Signatures
+NEVER DO THIS: Using mutable containers like lists or dictionaries as default parameter values.
+```python
+# INCORRECT
+def append_entry(item: str, registry: list[str] = []) -> list[str]:
+    registry.append(item)
+    return registry
+```
+DO THIS INSTEAD: Default to `None` and initialize the mutable container inside the function.
+```python
+# CORRECT
+def append_entry(item: str, registry: list[str] | None = None) -> list[str]:
+    target_registry = registry if registry is not None else []
+    target_registry.append(item)
+    return target_registry
+```
+
+### Untyped Function Signatures and Implicit Any
+NEVER DO THIS: Omitting parameter types and return type annotations.
+```python
+# INCORRECT
+def calculate_tax(amount, rate):
+    return amount * rate
+```
+DO THIS INSTEAD: Annotate all parameters and explicit return types using modern syntax.
+```python
+# CORRECT
+def calculate_tax(amount: float, rate: float) -> float:
+    return amount * rate
+```
+
+### Bare Exception Catching
+NEVER DO THIS: Using bare `except:` clauses that intercept `SystemExit` and `KeyboardInterrupt`.
+```python
+# INCORRECT
+try:
+    process_data()
+except:
+    print("An error occurred")
+```
+DO THIS INSTEAD: Catch specific exception subclasses and handle them explicitly.
+```python
+# CORRECT
+try:
+    process_data()
+except ValueError as err:
+    logger.error("Invalid data encountered: %s", err)
+```
+
+### Legacy Capitalized Generic Aliases
+NEVER DO THIS: Importing capitalized generic collection types from the `typing` module.
+```python
+# INCORRECT
+from typing import Dict, List, Union
+
+def process_items(data: Dict[str, List[Union[int, str]]]) -> None:
+    pass
+```
+DO THIS INSTEAD: Use native PEP 585 built-in collections and PEP 604 union types.
+```python
+# CORRECT
+def process_items(data: dict[str, list[int | str]]) -> None:
+    pass
+```
+
+### Unmanaged Resource Lifecycles
+NEVER DO THIS: Opening external resources without deterministic cleanup wrappers.
+```python
+# INCORRECT
+def read_log(path: str) -> str:
+    f = open(path, "r")
+    content = f.read()
+    f.close()
+    return content
+```
+DO THIS INSTEAD: Use deterministic context managers.
+```python
+# CORRECT
+from pathlib import Path
+
+def read_log(path: Path) -> str:
+    with path.open("r", encoding="utf-8") as file_stream:
+        return file_stream.read()
+```
