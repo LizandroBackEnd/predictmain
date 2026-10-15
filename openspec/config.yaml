@@ -1,0 +1,64 @@
+schema: spec-driven
+
+context: |
+  Tech stack: Next.js 16 (App Router), Bun, TypeScript, Prisma 7, PostgreSQL 17 + pgvector, Python 3.11, FastAPI, Scikit-learn
+  Architecture: Hybrid Decoupled (Web Core + ML Inference Engine), Screaming Architecture, Scope Rule
+  Testing: Bun Test (web/app), Pytest (ml_service)
+  Style: Clean Architecture, Hexagonal (Ports & Adapters), Conventional Commits
+
+strict_tdd: false
+
+testing:
+  strict_tdd: false
+  detected: 2026-10-15
+  projects:
+    - path: "."
+      stack: "nextjs-bun-typescript"
+      test_command: null
+      framework: null
+      layers:
+        unit: false
+        integration: false
+        e2e: false
+      coverage: null
+      quality:
+        linter: "bun run lint"
+        type_checker: "bunx tsc --noEmit"
+        formatter: null
+    - path: "ml_service"
+      stack: "python-fastapi-sklearn"
+      test_command: null
+      framework: null
+      layers:
+        unit: false
+        integration: false
+        e2e: false
+      coverage: null
+      quality:
+        linter: null
+        type_checker: null
+        formatter: null
+
+rules:
+  proposal:
+    - Include rollback plan for risky changes
+  specs:
+    - Use Given/When/Then for scenarios
+    - Use RFC 2119 keywords (MUST, SHALL, SHOULD, MAY)
+  design:
+    - Include sequence diagrams for complex flows
+    - Document architecture decisions with rationale
+  tasks:
+    - Group by phase, use hierarchical numbering
+    - Keep tasks completable in one session
+  apply:
+    guidelines:
+      - Follow existing code patterns and Screaming Architecture
+    tdd: false
+    test_command: ""
+  verify:
+    test_command: ""
+    build_command: "bun run build"
+    coverage_threshold: 0
+  archive:
+    - Warn before merging destructive deltas
