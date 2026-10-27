@@ -205,8 +205,27 @@ cd ml_service
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
+
+# --- Ejecución del Pipeline de Datos (Clean Architecture) ---
+# Equivalencia con scripts de versiones preliminares:
+# • create_manifest.py -> python -m src.cli ingest   (HU-01: Ingesta y validación SHA-256)
+# • profile_data.py    -> python -m src.cli profile  (HU-02: Perfilado estadístico en docs/)
+python -m src.cli ingest     # Genera y verifica data/raw/manifest.json (idempotente)
+python -m src.cli profile    # Genera docs/03-analysis/data-profile.md
+python -m src.cli all        # Corre ingesta + perfilado secuencialmente en un solo comando
+
+# Correr suite de pruebas unitarias automatizadas (7 tests)
+python -m unittest discover -s tests
+
+# Iniciar servidor de inferencia FastAPI (cuando esté configurado)
 uvicorn main:app --reload --port 8000
 ```
+
+> **Tip:** También puedes ejecutar el pipeline directamente desde la raíz del proyecto sin cambiar de carpeta:
+> ```bash
+> PYTHONPATH=ml_service ./ml_service/.venv/bin/python -m src.cli all
+> PYTHONPATH=ml_service ./ml_service/.venv/bin/python -m unittest discover -s ml_service/tests
+> ```
 
 #### 🪟 Windows (PowerShell)
 ```powershell
@@ -214,8 +233,23 @@ cd ml_service
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
+
+# --- Ejecución del Pipeline de Datos (Clean Architecture) ---
+python -m src.cli ingest     # HU-01: Ingesta y verificación de data/raw/manifest.json
+python -m src.cli profile    # HU-02: Perfilado y generación de docs/03-analysis/data-profile.md
+python -m src.cli all        # Corre ingesta + perfilado en un solo comando
+
+# Correr suite de pruebas unitarias automatizadas (7 tests)
+python -m unittest discover -s tests
+
+# Iniciar servidor de inferencia FastAPI
 uvicorn main:app --reload --port 8000
 ```
+
+> **Tip (Windows):** Ejecución directa desde la raíz:
+> ```powershell
+> $env:PYTHONPATH="ml_service"; .\ml_service\.venv\Scripts\python.exe -m src.cli all
+> ```
 
 ---
 
@@ -284,3 +318,6 @@ Para consultar el análisis a profundidad del dominio y la especificación forma
 - 📋 [Acta de Proyecto y Objetivos](./docs/01-project-management/project-charter.md)
 - 📊 [Historias de Usuario (CRISP-DM)](./docs/02-requirements/user-stories.md)
 - 🔬 [Comprensión del Dataset AI4I 2020](./docs/03-analysis/data-understanding.md)
+- 📈 [Reporte de Perfilado de Telemetría (HU-02)](./docs/03-analysis/data-profile.md)
+- 🔄 [Pipeline de Ingesta, Perfilado y CLI (HU-01 y HU-02)](./docs/05-development/data-pipeline.md)
+
