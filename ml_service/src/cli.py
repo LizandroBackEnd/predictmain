@@ -95,7 +95,7 @@ def main() -> int:
     profile_parser.add_argument(
         "--report",
         type=Path,
-        default=paths.profile_report_path,
+        default=paths.get_profile_report_path(),
         help="Ruta al reporte Markdown de salida",
     )
 
@@ -118,7 +118,7 @@ def main() -> int:
         ingest_exit = run_ingestion_cmd(args.csv, paths.manifest_path)
         if ingest_exit != 0:
             return ingest_exit
-        return run_profiling_cmd(args.csv, paths.profile_report_path)
+        return run_profiling_cmd(args.csv, paths.get_profile_report_path())
     else:
         parser.print_help()
         return 0

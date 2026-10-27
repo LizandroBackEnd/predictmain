@@ -19,12 +19,6 @@
 5. El proceso es idempotente: una ejecución repetida no duplica ni altera la fuente original.
 6. El código y la configuración de ingesta están versionados en el repositorio Git.
 
-> **Implementación Técnica:**
-> - Comando: `python -m src.cli ingest` (servicio `ml_service/src/ingestion/service.py`).
-> - Artefacto generado: [`data/raw/manifest.json`](../../data/raw/manifest.json) con SHA-256 (`59db4f1d...`).
-> - Pruebas: `ml_service/tests/test_ingestion.py` (5 tests de hash, esquema e idempotencia).
-> - Guía: [`docs/05-development/data-pipeline.md`](../05-development/data-pipeline.md).
-
 ---
 
 ## HU-02: Estructurar Tipos de Datos y Perfilar la Telemetría Histórica
@@ -40,12 +34,6 @@
 3. Se genera un reporte inicial con rangos, conteos, cardinalidad, estadísticas descriptivas y distribución de la variable objetivo.
 4. Se documentan las variables candidatas para el modelado y sus posibles limitaciones.
 5. El script de validación de esquema y el reporte de perfilado quedan versionados.
-
-> **Implementación Técnica:**
-> - Comando: `python -m src.cli profile` (servicio `ml_service/src/profiling/service.py`).
-> - Artefacto generado: [`docs/03-analysis/data-profile.md`](../03-analysis/data-profile.md).
-> - Pruebas: `ml_service/tests/test_profiling.py` (2 tests de métricas y builder).
-> - Guía: [`docs/05-development/data-pipeline.md`](../05-development/data-pipeline.md).
 
 ---
 

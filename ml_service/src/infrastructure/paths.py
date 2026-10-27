@@ -1,5 +1,6 @@
 """Centralized workspace path resolution for PredictMain ML services."""
 
+from datetime import date
 from pathlib import Path
 
 
@@ -29,10 +30,17 @@ class ProjectPaths:
 
         self.docs_dir = self.root / "docs"
         self.analysis_docs_dir = self.docs_dir / "03-analysis"
-        self.profile_report_path = self.analysis_docs_dir / "data-profile.md"
+
+        # Profiling reports go to data/profiling/ with a date-stamped filename
+        self.profiling_reports_dir = self.data_dir / "profiling"
 
         self.ml_service_dir = self.root / "ml_service"
         self.artifacts_dir = self.ml_service_dir / "artifacts"
+
+    def get_profile_report_path(self) -> Path:
+        """Return the date-stamped profile report path for today's execution."""
+        today = date.today().strftime("%Y-%m-%d")
+        return self.profiling_reports_dir / f"data-profile-{today}.md"
 
 
 # Global singleton instance

@@ -1,5 +1,7 @@
 """Markdown report generator for dataset profiling (HU-02)."""
 
+from datetime import datetime
+
 from src.domain.models import DatasetSummary
 
 
@@ -13,6 +15,7 @@ def markdown_table(headers: list[str], rows: list[list[str]]) -> str:
 
 def build_markdown_report(summary: DatasetSummary, filename: str) -> str:
     """Render full markdown profiling report from dataset summary metrics."""
+    executed_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     lines: list[str] = [
         f"# Reporte de Perfilado de Telemetría Histórica — {filename}",
         "",
@@ -128,6 +131,10 @@ def build_markdown_report(summary: DatasetSummary, filename: str) -> str:
         "## 7. Conclusión",
         "",
         "El dataset AI4I 2020 se encuentra validado y listo para la fase de preparación y modelado sin inconsistencias estructurales.",
+        "",
+        "---",
+        "",
+        f"> **Reporte generado:** {executed_at}",
     ])
 
     return "\n".join(lines) + "\n"

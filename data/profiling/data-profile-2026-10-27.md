@@ -68,3 +68,7 @@
 ## 7. Conclusión
 
 El dataset AI4I 2020 se encuentra validado y listo para la fase de preparación y modelado sin inconsistencias estructurales.
+
+---
+
+> **Reporte generado:** 2026-10-27 17:57:46
