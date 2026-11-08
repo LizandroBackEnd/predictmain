@@ -42,6 +42,11 @@ class ProjectPaths:
         self.reports_dir = self.root / "reports"
         self.null_report_path = self.reports_dir / "null_report.md"
 
+        # HU-05 paths
+        self.notebooks_dir = self.ml_service_dir / "notebooks"
+        self.outlier_report_path = self.reports_dir / "outlier_report.md"
+        self.outlier_csv_path = self.processed_data_dir / "ai4i2020_outlier_analyzed.csv"
+
     def get_profile_report_path(self) -> Path:
         """Return the date-stamped profile report path for today's execution."""
         today = date.today().strftime("%Y-%m-%d")

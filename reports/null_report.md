@@ -10,7 +10,7 @@
 | :--- | :--- |
 | Archivo fuente | `ai4i2020.csv` |
 | Archivo depurado | `C:\Users\user\Documents\SEPTIMO\edt_PredictMain\predictmain\data\processed\ai4i2020_clean.csv` |
-| Fecha de ejecución | 2026-11-08T01:25:45.477383Z |
+| Fecha de ejecución | 2026-11-08T02:32:33.314676Z |
 | Filas antes del tratamiento | 10,000 |
 | Filas con al menos un nulo | 0 |
 | Total de valores nulos encontrados | 0 |
@@ -65,4 +65,4 @@ No se requirió ninguna modificación: el dataset estaba completo.
 
 ---
 
-> **Reporte generado:** 2026-11-08T01:25:45.477383Z
+> **Reporte generado:** 2026-11-08T02:32:33.314676Z

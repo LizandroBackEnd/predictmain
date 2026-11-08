@@ -8,6 +8,7 @@ from src.infrastructure.paths import paths
 from src.ingestion.service import IngestionService
 from src.profiling.service import ProfilingService
 from src.null_treatment.service import NullTreatmentService
+from src.outlier_analysis.service import OutlierAnalysisService
 
 
 def run_ingestion_cmd(csv_path: Path, manifest_path: Path) -> int:
@@ -95,6 +96,33 @@ def run_null_treatment_cmd(csv_path: Path, output_csv: Path, report_path: Path) 
         return 1
 
 
+def run_outlier_analysis_cmd(csv_path: Path, output_csv: Path, report_path: Path) -> int:
+    """Execute outlier analysis and generate outlier_report.md (HU-05)."""
+    print("=" * 60)
+    print("📊 PredictMain — HU-05: Análisis de Valores Atípicos")
+    print("=" * 60)
+    print(f"Dataset CSV:    {csv_path}")
+    print(f"Salida:         {output_csv}")
+    print(f"Reporte:        {report_path}")
+    print()
+
+    service = OutlierAnalysisService()
+    try:
+        result = service.run(csv_path=csv_path, output_csv_path=output_csv, report_path=report_path)
+        print("✅ Análisis completado.")
+        print(f"• Registros entrada:     {result.rows_input:,}")
+        print(f"• Outliers detectados:   {result.total_detected:,}")
+        print(f"• Valores modificados:   {result.total_modified:,}")
+        print(f"• Filas excluidas:       {result.total_excluded:,}")
+        print(f"• Registros salida:      {result.rows_output:,}")
+        print()
+        return 0
+    except (RuntimeError, ValueError, OSError) as exc:
+        print(f"❌ Error durante el análisis: {exc}", file=sys.stderr)
+        return 1
+
+
+
 def main() -> int:
     """Parse CLI arguments and dispatch commands."""
     parser = argparse.ArgumentParser(
@@ -140,6 +168,12 @@ def main() -> int:
     treat_parser.add_argument("--output", type=Path, default=paths.clean_csv_path)
     treat_parser.add_argument("--report", type=Path, default=paths.null_report_path)
 
+    # Outlier analysis command
+    outlier_parser = subparsers.add_parser("outliers", help="Analizar outliers y generar outlier_report.md (HU-05)")
+    outlier_parser.add_argument("--csv",    type=Path, default=paths.clean_csv_path)
+    outlier_parser.add_argument("--output", type=Path, default=paths.outlier_csv_path)
+    outlier_parser.add_argument("--report", type=Path, default=paths.outlier_report_path)
+
     # All command
     all_parser = subparsers.add_parser("all", help="Ejecutar ingesta, perfilado y tratamiento de extremo a extremo")
     all_parser.add_argument(
@@ -157,6 +191,8 @@ def main() -> int:
         return run_profiling_cmd(args.csv, args.report)
     elif args.command == "treat":
         return run_null_treatment_cmd(args.csv, args.output, args.report)
+    elif args.command == "outliers":
+        return run_outlier_analysis_cmd(args.csv, args.output, args.report)
     elif args.command == "all":
         ingest_exit = run_ingestion_cmd(args.csv, paths.manifest_path)
         if ingest_exit != 0:
@@ -164,7 +200,10 @@ def main() -> int:
         profile_exit = run_profiling_cmd(args.csv, paths.get_profile_report_path())
         if profile_exit != 0:
             return profile_exit
-        return run_null_treatment_cmd(args.csv, paths.clean_csv_path, paths.null_report_path)
+        treat_exit = run_null_treatment_cmd(args.csv, paths.clean_csv_path, paths.null_report_path)
+        if treat_exit != 0:
+            return treat_exit
+        return run_outlier_analysis_cmd(paths.clean_csv_path, paths.outlier_csv_path, paths.outlier_report_path)
     else:
         parser.print_help()
         return 0
