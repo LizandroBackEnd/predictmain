@@ -9,6 +9,7 @@ from src.ingestion.service import IngestionService
 from src.profiling.service import ProfilingService
 from src.null_treatment.service import NullTreatmentService
 from src.outlier_analysis.service import OutlierAnalysisService
+from src.transformation.service import TransformationService
 
 
 def run_ingestion_cmd(csv_path: Path, manifest_path: Path) -> int:
@@ -123,6 +124,50 @@ def run_outlier_analysis_cmd(csv_path: Path, output_csv: Path, report_path: Path
 
 
 
+def run_transform_cmd(csv_path: Path, output_csv: Path, pipeline_path: Path) -> int:
+    """Fit transformation pipeline on training data and serialize it (HU-06)."""
+    print("=" * 60)
+    print("⚙️  PredictMain — HU-06: Pipeline de Transformación")
+    print("=" * 60)
+    print(f"Dataset CSV:    {csv_path}")
+    print(f"Salida CSV:     {output_csv}")
+    print(f"Pipeline:       {pipeline_path}")
+    print()
+
+    import pandas as pd
+    service = TransformationService()
+    try:
+        df = pd.read_csv(csv_path)
+        X, y = service.split_features_target(df)
+
+        X_transformed = service.fit_transform(X)
+
+        missing = service.verify_output(X_transformed)
+        if missing:
+            print(f"❌ Columnas faltantes en la salida: {missing}", file=sys.stderr)
+            return 1
+
+        service.save(pipeline_path)
+
+        # Persist transformed feature matrix alongside the target
+        out_df = X_transformed.copy()
+        out_df[y.name] = y.values
+        output_csv.parent.mkdir(parents=True, exist_ok=True)
+        out_df.to_csv(output_csv, index=False)
+
+        print(f"✅ Pipeline ajustado y guardado.")
+        print(f"• Filas transformadas:   {len(X_transformed):,}")
+        print(f"• Columnas de features:  {len(X_transformed.columns)}")
+        print(f"• Columnas: {list(X_transformed.columns)}")
+        print(f"• Pipeline guardado en:  {pipeline_path}")
+        print()
+        return 0
+    except (RuntimeError, ValueError, OSError) as exc:
+        print(f"❌ Error durante la transformación: {exc}", file=sys.stderr)
+        return 1
+
+
+
 def main() -> int:
     """Parse CLI arguments and dispatch commands."""
     parser = argparse.ArgumentParser(
@@ -174,6 +219,12 @@ def main() -> int:
     outlier_parser.add_argument("--output", type=Path, default=paths.outlier_csv_path)
     outlier_parser.add_argument("--report", type=Path, default=paths.outlier_report_path)
 
+    # Transformation pipeline command
+    transform_parser = subparsers.add_parser("transform", help="Ajustar pipeline y generar features (HU-06)")
+    transform_parser.add_argument("--csv",      type=Path, default=paths.outlier_csv_path)
+    transform_parser.add_argument("--output",   type=Path, default=paths.transformed_csv_path)
+    transform_parser.add_argument("--pipeline", type=Path, default=paths.pipeline_path)
+
     # All command
     all_parser = subparsers.add_parser("all", help="Ejecutar ingesta, perfilado y tratamiento de extremo a extremo")
     all_parser.add_argument(
@@ -193,6 +244,8 @@ def main() -> int:
         return run_null_treatment_cmd(args.csv, args.output, args.report)
     elif args.command == "outliers":
         return run_outlier_analysis_cmd(args.csv, args.output, args.report)
+    elif args.command == "transform":
+        return run_transform_cmd(args.csv, args.output, args.pipeline)
     elif args.command == "all":
         ingest_exit = run_ingestion_cmd(args.csv, paths.manifest_path)
         if ingest_exit != 0:
@@ -203,7 +256,10 @@ def main() -> int:
         treat_exit = run_null_treatment_cmd(args.csv, paths.clean_csv_path, paths.null_report_path)
         if treat_exit != 0:
             return treat_exit
-        return run_outlier_analysis_cmd(paths.clean_csv_path, paths.outlier_csv_path, paths.outlier_report_path)
+        outlier_exit = run_outlier_analysis_cmd(paths.clean_csv_path, paths.outlier_csv_path, paths.outlier_report_path)
+        if outlier_exit != 0:
+            return outlier_exit
+        return run_transform_cmd(paths.outlier_csv_path, paths.transformed_csv_path, paths.pipeline_path)
     else:
         parser.print_help()
         return 0

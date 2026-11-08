@@ -47,6 +47,10 @@ class ProjectPaths:
         self.outlier_report_path = self.reports_dir / "outlier_report.md"
         self.outlier_csv_path = self.processed_data_dir / "ai4i2020_outlier_analyzed.csv"
 
+        # HU-06 paths
+        self.pipeline_path = self.artifacts_dir / "pipeline.joblib"
+        self.transformed_csv_path = self.processed_data_dir / "ai4i2020_transformed.csv"
+
     def get_profile_report_path(self) -> Path:
         """Return the date-stamped profile report path for today's execution."""
         today = date.today().strftime("%Y-%m-%d")
