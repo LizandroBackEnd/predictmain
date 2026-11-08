@@ -7,6 +7,7 @@ from pathlib import Path
 from src.infrastructure.paths import paths
 from src.ingestion.service import IngestionService
 from src.profiling.service import ProfilingService
+from src.null_treatment.service import NullTreatmentService
 
 
 def run_ingestion_cmd(csv_path: Path, manifest_path: Path) -> int:
@@ -60,6 +61,40 @@ def run_profiling_cmd(csv_path: Path, report_path: Path) -> int:
         return 1
 
 
+def run_null_treatment_cmd(csv_path: Path, output_csv: Path, report_path: Path) -> int:
+    """Execute null treatment pipeline and generate null report (HU-04)."""
+    print("=" * 60)
+    print("🧹 PredictMain — HU-04: Tratamiento de Valores Nulos")
+    print("=" * 60)
+    print(f"Dataset CSV:    {csv_path}")
+    print(f"Salida limpia:  {output_csv}")
+    print(f"Reporte:        {report_path}")
+    print()
+
+    service = NullTreatmentService()
+    try:
+        result = service.run(csv_path=csv_path, output_csv_path=output_csv, report_path=report_path)
+        print(f"✅ Pipeline completado.")
+        print(f"• Filas antes:           {result.rows_before:,}")
+        print(f"• Filas con nulos:       {result.rows_with_nulls_before:,}")
+        print(f"• Total nulos:           {result.total_nulls_before:,}")
+        print(f"• Filas eliminadas:      {result.rows_dropped:,}")
+        print(f"• Valores imputados:     {result.total_values_imputed:,}")
+        print(f"• Filas en salida:       {result.rows_after:,}")
+        print()
+
+        remaining = service.verify_no_unexpected_nulls(output_csv)
+        if remaining:
+            print(f"⚠️  Nulos inesperados en: {remaining}", file=sys.stderr)
+            return 1
+        print("✅ Verificación post-tratamiento: sin nulos inesperados.")
+        print()
+        return 0
+    except (RuntimeError, ValueError, OSError) as exc:
+        print(f"❌ Error durante el tratamiento: {exc}", file=sys.stderr)
+        return 1
+
+
 def main() -> int:
     """Parse CLI arguments and dispatch commands."""
     parser = argparse.ArgumentParser(
@@ -99,8 +134,14 @@ def main() -> int:
         help="Ruta al reporte Markdown de salida",
     )
 
+    # Null treatment command
+    treat_parser = subparsers.add_parser("treat", help="Tratar valores nulos y generar null_report.md (HU-04)")
+    treat_parser.add_argument("--csv", type=Path, default=paths.raw_csv_path)
+    treat_parser.add_argument("--output", type=Path, default=paths.clean_csv_path)
+    treat_parser.add_argument("--report", type=Path, default=paths.null_report_path)
+
     # All command
-    all_parser = subparsers.add_parser("all", help="Ejecutar ingesta y perfilado de extremo a extremo")
+    all_parser = subparsers.add_parser("all", help="Ejecutar ingesta, perfilado y tratamiento de extremo a extremo")
     all_parser.add_argument(
         "--csv",
         type=Path,
@@ -114,11 +155,16 @@ def main() -> int:
         return run_ingestion_cmd(args.csv, args.manifest)
     elif args.command == "profile":
         return run_profiling_cmd(args.csv, args.report)
+    elif args.command == "treat":
+        return run_null_treatment_cmd(args.csv, args.output, args.report)
     elif args.command == "all":
         ingest_exit = run_ingestion_cmd(args.csv, paths.manifest_path)
         if ingest_exit != 0:
             return ingest_exit
-        return run_profiling_cmd(args.csv, paths.get_profile_report_path())
+        profile_exit = run_profiling_cmd(args.csv, paths.get_profile_report_path())
+        if profile_exit != 0:
+            return profile_exit
+        return run_null_treatment_cmd(args.csv, paths.clean_csv_path, paths.null_report_path)
     else:
         parser.print_help()
         return 0
