@@ -1,6 +1,8 @@
 """Domain entities and value objects for dataset metadata, ingestion, and profiling."""
 
-from dataclasses import asdict, dataclass
+from __future__ import annotations
+
+from dataclasses import asdict, dataclass, field
 from typing import Any, Dict, List, Optional
 
 
@@ -70,6 +72,17 @@ class ColumnMetric:
 
 
 @dataclass
+class QualityReport:
+    """Data quality findings: duplicates, nulls, and physical range violations."""
+
+    duplicate_rows: int
+    null_counts: Dict[str, int]        # {column_name: null_count}
+    out_of_range: Dict[str, List[int]] # {column_name: [row indices]}
+    invalid_type_values: Dict[str, int] # {column_name: count of unexpected values}
+    total_issues: int
+
+
+@dataclass
 class DatasetSummary:
     """Aggregated dataset profiling metrics."""
 
@@ -78,3 +91,4 @@ class DatasetSummary:
     columns: List[ColumnMetric]
     target_distribution: Dict[str, int]
     failure_modes_distribution: Dict[str, int]
+    quality_report: Optional["QualityReport"] = None

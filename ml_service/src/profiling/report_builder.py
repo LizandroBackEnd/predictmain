@@ -112,7 +112,79 @@ def build_markdown_report(summary: DatasetSummary, filename: str) -> str:
             ],
         ),
         "",
-        "## 6. Variables Candidatas para Modelado Predictivo",
+    ])
+
+    # --- Quality Report section (generated from QualityReport entity) ---
+    qr = summary.quality_report
+    if qr is not None:
+        lines.extend([
+            "## 6. Reporte de Calidad del Dataset",
+            "",
+            f"- **Filas duplicadas detectadas:** {qr.duplicate_rows} "
+            + ("✅ Sin duplicados" if qr.duplicate_rows == 0 else "⚠️ Requiere revisión"),
+            f"- **Total de problemas encontrados:** {qr.total_issues} "
+            + ("✅ Dataset limpio" if qr.total_issues == 0 else "⚠️ Ver detalle"),
+            "",
+        ])
+
+        # Nulls
+        if qr.null_counts:
+            null_rows = [[f"`{col}`", str(cnt), "⚠️ Contiene nulos"] for col, cnt in qr.null_counts.items()]
+            lines.extend([
+                "### 6.1 Valores Nulos por Columna",
+                "",
+                markdown_table(["Columna", "Nulos", "Estado"], null_rows),
+                "",
+            ])
+        else:
+            lines.extend(["### 6.1 Valores Nulos por Columna", "", "> ✅ Ninguna columna contiene valores nulos.", ""])
+
+        # Out-of-range
+        if qr.out_of_range:
+            range_rows = [
+                [f"`{col}`", str(len(indices)), f"Filas: {indices[:5]}{'...' if len(indices) > 5 else ''}"]
+                for col, indices in qr.out_of_range.items()
+            ]
+            lines.extend([
+                "### 6.2 Valores Fuera de Rango Físico (Especificación UCI)",
+                "",
+                markdown_table(["Columna", "Registros afectados", "Primeros índices"], range_rows),
+                "",
+            ])
+        else:
+            lines.extend([
+                "### 6.2 Valores Fuera de Rango Físico (Especificación UCI)",
+                "",
+                "> ✅ Todos los valores están dentro de los rangos físicos documentados por UCI.",
+                "",
+            ])
+
+        # Invalid categoricals / binaries
+        if qr.invalid_type_values:
+            inv_rows = [[f"`{col}`", str(cnt), "⚠️ Valores inesperados"] for col, cnt in qr.invalid_type_values.items()]
+            lines.extend([
+                "### 6.3 Valores Inválidos en Columnas Categóricas y Binarias",
+                "",
+                markdown_table(["Columna", "Registros afectados", "Estado"], inv_rows),
+                "",
+            ])
+        else:
+            lines.extend([
+                "### 6.3 Valores Inválidos en Columnas Categóricas y Binarias",
+                "",
+                "> ✅ Todas las columnas categóricas y binarias contienen únicamente valores válidos.",
+                "",
+            ])
+
+        # Re-number following sections
+        section_7 = "## 7."
+        section_8 = "## 8."
+    else:
+        section_7 = "## 6."
+        section_8 = "## 7."
+
+    lines.extend([
+        section_7 + " Variables Candidatas para Modelado Predictivo",
         "",
         markdown_table(
             ["Variable", "Rol en Modelado", "Consideración de Ingeniería"],
@@ -128,7 +200,7 @@ def build_markdown_report(summary: DatasetSummary, filename: str) -> str:
             ],
         ),
         "",
-        "## 7. Conclusión",
+        section_8 + " Conclusión",
         "",
         "El dataset AI4I 2020 se encuentra validado y listo para la fase de preparación y modelado sin inconsistencias estructurales.",
         "",
