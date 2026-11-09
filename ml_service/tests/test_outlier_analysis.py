@@ -21,8 +21,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from src.outlier_analysis.rules import OutlierRule
-from src.outlier_analysis.service import OutlierAnalysisService
+from src.domain.outlier_rules import OutlierRule
+from src.application.outlier_analysis import OutlierAnalysisService
 
 
 def _make_df_with_outliers() -> pd.DataFrame:

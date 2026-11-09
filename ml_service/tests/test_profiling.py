@@ -5,7 +5,7 @@ import unittest
 from pathlib import Path
 
 import pandas as pd
-from src.profiling.service import ProfilingService
+from src.application.profiling import ProfilingService
 
 
 class TestProfilingService(unittest.TestCase):

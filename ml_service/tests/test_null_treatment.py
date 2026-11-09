@@ -18,7 +18,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from src.null_treatment.service import NullTreatmentService
+from src.application.null_treatment import NullTreatmentService
 
 
 def _make_clean_df() -> pd.DataFrame:

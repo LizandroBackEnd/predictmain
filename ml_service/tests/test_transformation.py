@@ -19,13 +19,13 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from src.transformation.features import (
+from src.application.features import (
     DERIVED_FEATURE_NAME,
     EXPECTED_FEATURE_COLUMNS,
     EXCLUDE_COLUMNS,
     TARGET_COLUMN,
 )
-from src.transformation.service import TransformationService
+from src.application.transformation import TransformationService
 
 
 def _make_df(n: int = 20, seed: int = 42) -> pd.DataFrame:

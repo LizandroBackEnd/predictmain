@@ -4,7 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from src.ingestion.service import IngestionService
+from src.application.ingestion import IngestionService
 
 
 class TestIngestionService(unittest.TestCase):
