@@ -10,7 +10,7 @@
 | :--- | :--- |
 | Archivo fuente | `ai4i2020.csv` |
 | Archivo depurado | `ai4i2020_clean.csv` |
-| Fecha de ejecución | 2026-11-09 23:23:01 UTC |
+| Fecha de ejecución | 2026-11-10 04:05:16 UTC |
 | Filas antes del tratamiento | 10,000 |
 | Filas con al menos un nulo | 0 |
 | Total de valores nulos encontrados | 0 |
@@ -65,4 +65,4 @@ No se requirió ninguna modificación: el dataset estaba completo.
 
 ---
 
-> **Reporte generado:** 2026-11-09 23:23:01 UTC
+> **Reporte generado:** 2026-11-10 04:05:16 UTC
