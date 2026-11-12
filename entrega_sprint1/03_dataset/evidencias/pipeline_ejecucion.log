@@ -1,0 +1,70 @@
+﻿PredictMain - Ejecucion del pipeline - 2026-11-11 23:24:56
+============================================================
+­ƒÜÇ PredictMain ÔÇö HU-01: Ingesta de Datos Crudos
+============================================================
+Dataset CSV:    C:\Users\user\Documents\SEPTIMO\edt_PredictMain\predictmain\entrega_sprint1\03_dataset\data\raw\ai4i2020.csv
+Manifest JSON:  C:\Users\user\Documents\SEPTIMO\edt_PredictMain\predictmain\entrega_sprint1\03_dataset\data\raw\manifest.json
+
+Ô£à New manifest created successfully.
+ÔÇó Filas de datos:    10,000
+ÔÇó Columnas:          14
+ÔÇó Tama├▒o archivo:    522,048 bytes
+ÔÇó SHA-256:           dc6630cd9b1f0f853922fad78a1b6436570d3f1ec863f1dd5c4340ac56bc8a8e
+ÔÇó Inalterado:        True
+
+============================================================
+­ƒôè PredictMain ÔÇö HU-02: Perfilado de Telemetr├¡a Hist├│rica
+============================================================
+Dataset CSV:    C:\Users\user\Documents\SEPTIMO\edt_PredictMain\predictmain\entrega_sprint1\03_dataset\data\raw\ai4i2020.csv
+Reporte MD:     C:\Users\user\Documents\SEPTIMO\edt_PredictMain\predictmain\entrega_sprint1\03_dataset\data\profiling\data-profile-2026-11-11.md
+
+Ô£à Perfilado estad├¡stico completado correctamente.
+ÔÇó Filas analizadas:  10,000
+ÔÇó Columnas:          14
+ÔÇó Distribuci├│n falla: Clase 0: 9,661, Clase 1: 339
+ÔÇó Documento escrito: C:\Users\user\Documents\SEPTIMO\edt_PredictMain\predictmain\entrega_sprint1\03_dataset\data\profiling\data-profile-2026-11-11.md
+
+============================================================
+­ƒº╣ PredictMain ÔÇö HU-04: Tratamiento de Valores Nulos
+============================================================
+Dataset CSV:    C:\Users\user\Documents\SEPTIMO\edt_PredictMain\predictmain\entrega_sprint1\03_dataset\data\raw\ai4i2020.csv
+Salida limpia:  C:\Users\user\Documents\SEPTIMO\edt_PredictMain\predictmain\entrega_sprint1\03_dataset\data\processed\ai4i2020_clean.csv
+Reporte:        C:\Users\user\Documents\SEPTIMO\edt_PredictMain\predictmain\entrega_sprint1\03_dataset\reports\null_report.md
+
+Ô£à Pipeline completado.
+ÔÇó Filas antes:           10,000
+ÔÇó Filas con nulos:       0
+ÔÇó Total nulos:           0
+ÔÇó Filas eliminadas:      0
+ÔÇó Valores imputados:     0
+ÔÇó Filas en salida:       10,000
+
+Ô£à Verificaci├│n post-tratamiento: sin nulos inesperados.
+
+============================================================
+­ƒôè PredictMain ÔÇö HU-05: An├ílisis de Valores At├¡picos
+============================================================
+Dataset CSV:    C:\Users\user\Documents\SEPTIMO\edt_PredictMain\predictmain\entrega_sprint1\03_dataset\data\processed\ai4i2020_clean.csv
+Salida:         C:\Users\user\Documents\SEPTIMO\edt_PredictMain\predictmain\entrega_sprint1\03_dataset\data\processed\ai4i2020_outlier_analyzed.csv
+Reporte:        C:\Users\user\Documents\SEPTIMO\edt_PredictMain\predictmain\entrega_sprint1\03_dataset\reports\outlier_report.md
+
+Ô£à An├ílisis completado.
+ÔÇó Registros entrada:     10,000
+ÔÇó Outliers detectados:   1,170
+ÔÇó Valores modificados:   0
+ÔÇó Filas excluidas:       0
+ÔÇó Registros salida:      10,000
+
+============================================================
+ÔÜÖ´©Å  PredictMain ÔÇö HU-06: Pipeline de Transformaci├│n
+============================================================
+Dataset CSV:    C:\Users\user\Documents\SEPTIMO\edt_PredictMain\predictmain\entrega_sprint1\03_dataset\data\processed\ai4i2020_outlier_analyzed.csv
+Salida CSV:     C:\Users\user\Documents\SEPTIMO\edt_PredictMain\predictmain\entrega_sprint1\03_dataset\data\processed\ai4i2020_transformed.csv
+Pipeline:       C:\Users\user\Documents\SEPTIMO\edt_PredictMain\predictmain\entrega_sprint1\03_dataset\ml_service\artifacts\pipeline.joblib
+
+Ô£à Pipeline ajustado y guardado.
+ÔÇó Filas transformadas:   10,000
+ÔÇó Columnas de features:  8
+ÔÇó Columnas: ['Air temperature [K]', 'Process temperature [K]', 'Rotational speed [rpm]', 'Torque [Nm]', 'Tool wear [min]', 'Temp_diff', 'Type_L', 'Type_M']
+ÔÇó Pipeline guardado en:  C:\Users\user\Documents\SEPTIMO\edt_PredictMain\predictmain\entrega_sprint1\03_dataset\ml_service\artifacts\pipeline.joblib
+
