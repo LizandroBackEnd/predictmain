@@ -1,0 +1,95 @@
+{
+  "dataset": {
+    "path": "03_dataset/data/processed/ai4i2020_transformed.csv",
+    "target": "Machine failure",
+    "features": [
+      "Air temperature [K]",
+      "Process temperature [K]",
+      "Rotational speed [rpm]",
+      "Torque [Nm]",
+      "Tool wear [min]",
+      "Temp_diff",
+      "Type_L",
+      "Type_M"
+    ],
+    "rows": 10000,
+    "positive_class": 339,
+    "negative_class": 9661
+  },
+  "split": {
+    "train": 0.70,
+    "validation": 0.15,
+    "test": 0.15,
+    "stratify_by": ["Machine failure", "Type"],
+    "random_state": 42
+  },
+  "preprocessing": {
+    "pipeline_artifact": "03_dataset/ml_service/artifacts/pipeline.joblib",
+    "scaler": "StandardScaler",
+    "encoder": "OneHotEncoder(drop='first')",
+    "derived_features": ["Temp_diff"],
+    "excluded_features": ["UDI", "Product ID", "TWF", "HDF", "PWF", "OSF", "RNF"]
+  },
+  "models": [
+    {
+      "name": "logistic_regression",
+      "class_weight": "balanced",
+      "max_iter": 1000
+    },
+    {
+      "name": "random_forest",
+      "class_weight": "balanced",
+      "n_estimators": 300,
+      "random_state": 42
+    },
+    {
+      "name": "gradient_boosting",
+      "random_state": 42
+    },
+    {
+      "name": "hist_gradient_boosting",
+      "random_state": 42
+    }
+  ],
+  "cross_validation": {
+    "strategy": "StratifiedKFold",
+    "folds": 5,
+    "shuffle": true,
+    "random_state": 42
+  },
+  "threshold": {
+    "initial": 0.5,
+    "optimize_on": "validation",
+    "priority_metric": "recall"
+  },
+  "metrics": [
+    "precision",
+    "recall",
+    "f1",
+    "roc_auc",
+    "pr_auc",
+    "confusion_matrix"
+  ],
+  "artifacts": {
+    "model_output_dir": "ml_service/artifacts",
+    "metrics_report": "05_entrenamiento/evidencias/metricas_modelos.md"
+  },
+  "llm_adaptation": {
+    "strategy": "rag_prompt_engineering",
+    "fine_tuning": false,
+    "corpus_path": "02_corpus/salidas/corpus_procesado.txt",
+    "source_pdf_sha256": "78190C534B822D0245A4E98FF51FC6A77AF4D52B7C1C295F105B9B0575B04EFE",
+    "corpus_processed_sha256": "9CD37B95A92D3DC482D4F0257FD6DDBE573116005BC8491C6C64D9C18FA8AFDE",
+    "chunk_size": 800,
+    "chunk_overlap": 120,
+    "retrieval_top_k": 5,
+    "similarity": "cosine",
+    "temperature": 0.2,
+    "max_tokens": 1000,
+    "language": "es",
+    "citation": "documento, seccion, pagina",
+    "abstention": "No tengo evidencia suficiente",
+    "status": "designed_pending_implementation"
+  },
+  "status": "pending_execution"
+}

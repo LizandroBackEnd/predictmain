@@ -1,0 +1,976 @@
+CORPUS DE CONOCIMIENTO
+
+PredictMain
+
+Mantenimiento predictivo mediante aprendizaje automático
+
+Documento técnico y académico
+
+Universidad Universidad Tecnológica de Nezahualcóyotl
+
+División División de Tecnologías de la Información
+
+Asignatura Formulación de Proyectos de Tecnología
+
+Grupo G050-701M
+
+Integrantes Antonio Santos Lizandro Fátima Guadalupe Baez García Luis Antonio Bautista Patiño Jessica Beatriz Cruz Jaime María Isabel Mérida López
+
+Versión 2.0 - Corpus verificado
+
+Fecha octubre de 2026
+
+Dataset de AI4I 2020 Predictive Maintenance Dataset referencia
+
+Fuente de datos UCI Machine Learning Repository
+
+Declaración de autenticidad y alcance
+
+Este documento contiene una síntesis técnica elaborada a partir de la documentación oficial del dataset AI4I 2020, la descarga del archivo oficial ai4i2020.csv y las investigaciones académicas citadas
+al final. Los resultados numéricos del dataset que aparecen en este corpus fueron comprobados directamente sobre el archivo oficial descargado desde UCI.
+
+Aclaración fundamental: AI4I 2020 es un dataset oficial y reproducible, pero sus observaciones son sintéticas. No son mediciones originales capturadas directamente de una planta industrial. El dataset
+fue diseñado para representar datos realistas de mantenimiento predictivo y está basado en el comportamiento de una máquina de fresado.
+
+1. Descripción del corpus
+
+Este corpus reúne y sintetiza conocimiento técnico y académico relacionado con el mantenimiento predictivo de maquinaria industrial mediante aprendizaje automático. Su contenido integra
+investigaciones sobre:
+
+El dataset AI4I 2020. Clasificación de fallas de maquinaria.
+
+Comparación de modelos de aprendizaje automático.
+
+Aprendizaje profundo aplicado al mantenimiento predictivo. Desbalance de clases.
+
+Escasez de registros de falla. Selección de características.
+
+Ingeniería y extracción de características. Validación y evaluación de modelos.
+
+Predicción en tiempo real. Datos sintéticos frente a datos industriales reales.
+
+Internet of Things aplicado a maquinaria. Limitaciones y generalización de los modelos.
+
+El corpus no es una lista de enlaces. Es una base de conocimiento sintetizada, donde cada investigación se relaciona con los conceptos, datos, algoritmos, resultados y decisiones relevantes para
+PredictMain.
+
+2. Problema central del dominio
+
+El mantenimiento reactivo interviene después de que la maquinaria presenta una falla. Este enfoque puede provocar:
+
+Paros no planificados. Pérdidas económicas.
+
+Interrupciones en la producción. Reparaciones urgentes.
+
+Sustitución prematura o tardía de componentes. Falta de información para priorizar las actividades de mantenimiento.
+
+El mantenimiento predictivo busca utilizar mediciones de la maquinaria y registros históricos para identificar patrones asociados con el deterioro o la falla antes de que ocurra un evento crítico. En
+un sistema de mantenimiento predictivo, el modelo recibe variables de operación y produce una estimación, por ejemplo:
+
+Entrada Proceso Salida esperada
+
+Temperatura, velocidad, torque y Modelo de clasificación o Riesgo de falla desgaste detección
+
+Historial de fallas Análisis de patrones Tipos de comportamiento asociados a fallas
+
+Variables de sensores Ingeniería de características Indicadores de condición
+
+Datos históricos Entrenamiento y validación Modelo predictivo
+
+Resultado del modelo Interpretación de negocio Recomendación de inspección o mantenimiento
+
+La dificultad principal consiste en que los datos industriales no siempre son abundantes, equilibrados, completos o representativos de todos los escenarios posibles.
+
+3. AI4I 2020 Predictive Maintenance Dataset
+
+3.1 Identificación
+
+Campo Información
+
+Nombre AI4I 2020 Predictive Maintenance Dataset
+
+Repositorio UCI Machine Learning Repository
+
+Año de donación 2020
+
+Tipo Dataset sintético de mantenimiento predictivo
+
+Características Multivariado y de series temporales
+
+Tareas asociadas Clasificación, regresión y descubrimiento causal
+
+Registros 10,000
+
+Variables documentadas 14 columnas en el archivo original
+
+Valores faltantes No contiene valores faltantes en la versión oficial
+
+DOI 10.24432/C5HS5C
+
+Licencia Creative Commons Attribution 4.0 International
+
+Fuente oficial UCI Machine Learning Repository
+
+3.2 Propósito del dataset
+
+El dataset fue creado porque los datos reales de mantenimiento predictivo son difíciles de obtener y publicar. Su objetivo es representar, de forma sintética, datos de operación de una máquina
+industrial y diferentes modos de falla. El dataset es apropiado para experimentar con:
+
+Clasificación binaria de falla y no falla. Clasificación de modos de falla.
+
+Comparación de algoritmos. Balanceo de clases.
+
+Selección de variables. Evaluación de métricas.
+
+Interpretabilidad de modelos.
+
+No debe interpretarse como una representación completa de una planta industrial real. Su utilidad principal es experimental y educativa.
+
+3.3 Variables del dataset
+
+Variable Tipo Papel Unidad o descripción
+
+UID Entera Identificador Identificador único del registro.
+
+Product ID Categórica Identificador Identificador del producto y número de serie.
+
+Type Categórica Característica Calidad del producto: L, M o H.
+
+Air temperature Continua Característica Temperatura del aire en Kelvin.
+
+Process temperature Continua Característica Temperatura del proceso en Kelvin.
+
+Rotational speed Entera Característica Velocidad de rotación en rpm.
+
+Torque Continua Característica Torque en Nm.
+
+Tool wear Entera Característica Desgaste de la herramienta en minutos.
+
+Machine failure Entera/binaria Objetivo Indica si ocurrió una falla de máquina.
+
+TWF Entera/binaria Objetivo auxiliar Tool Wear Failure.
+
+HDF Entera/binaria Objetivo auxiliar Heat Dissipation Failure.
+
+PWF Entera/binaria Objetivo auxiliar Power Failure.
+
+OSF Entera/binaria Objetivo auxiliar Overstrain Failure.
+
+RNF Entera/binaria Objetivo auxiliar Random Failure.
+
+3.4 Tipos de producto
+
+Tipo Significado Proporción aproximada
+
+L Variante de producto indicada por la documentación 6,000 registros observados; 60.00 %
+
+M Variante de producto indicada por la documentación 2,997 registros observados; 29.97 %
+
+H Variante de producto indicada por la documentación 1,003 registros observados; 10.03 %
+
+La documentación de UCI describe una distribución conceptual de tipos L, M y H, pero la distribución comprobada en el archivo descargado no coincide exactamente con una proporción 50/30/20. Para
+PredictMain se conservará la distribución real observada en el archivo: L6,000, M2,997 y H1,003. Esta diferencia queda registrada como una observación de calidad y trazabilidad, no se corrige
+artificialmente. El tipo de producto influye en determinadas condiciones del proceso, como el desgaste acumulado de la herramienta y los límites asociados con la sobrecarga.
+
+3.5 Generación de las variables
+
+Variable Comportamiento descrito
+
+Temperatura del aire Se genera mediante un proceso de caminata aleatoria y se normaliza alrededor de 300
+
+Temperatura del Se relaciona con la temperatura del aire y se mantiene aproximadamente 10 K por proceso encima.
+
+Velocidad de rotación Se calcula a partir de una potencia de referencia y contiene ruido con distribución normal.
+
+Torque Se distribuye alrededor de 40 Nm, con una desviación aproximada de 10 Nm y sin valores negativos.
+
+Desgaste de Aumenta según el uso y recibe incrementos relacionados con el tipo de producto. herramienta
+
+3.6 Modos de falla
+
+3.6.1 Tool Wear Failure - TWF La herramienta puede fallar cuando su desgaste alcanza un tiempo seleccionado aleatoriamente dentro del intervalo de aproximadamente 200 a 240 minutos.
+
+Elemento Descripción
+
+Variable relacionada Tool wear
+
+Tipo de fenómeno Desgaste acumulado
+
+Posible señal Aumento progresivo del tiempo de uso
+
+Riesgo de modelado Un modelo puede aprender el umbral sin comprender el contexto completo
+
+3.6.2 Heat Dissipation Failure - HDF La falla de disipación térmica puede ocurrir cuando la diferencia entre la temperatura del aire y la temperatura del proceso es menor que aproximadamente 8.6 K y
+la velocidad de rotación es inferior a aproximadamente 1380 rpm.
+
+Variables relacionadas Temperatura del aire, temperatura del proceso y rpm
+
+Relación derivada Diferencia entre temperaturas
+
+Tipo de problema Condición térmica y de velocidad
+
+Implicación Es importante analizar variables combinadas, no solo variables aisladas
+
+3.6.3 Power Failure - PWF La falla de potencia se relaciona con la potencia del proceso, calculada a partir del torque y la velocidad de rotación expresada en radianes por segundo. La falla puede
+ocurrir cuando la potencia está por debajo de aproximadamente 3500 W o por encima de aproximadamente 9000 W.
+
+Variables relacionadas Torque y velocidad de rotación
+
+Variable derivada posible Potencia aproximada
+
+Tipo de problema Condición de potencia fuera de rango
+
+Implicación La ingeniería de características puede mejorar la representación del fenómeno
+
+3.6.4 Overstrain Failure - OSF La falla por sobreesfuerzo se relaciona con el producto del desgaste de la herramienta y el torque. El umbral varía según el tipo de producto.
+
+Tipo de producto Umbral aproximado de sobreesfuerzo
+
+L 11,000 minNm
+
+M 12,000 minNm
+
+H 13,000 minNm
+
+Variables relacionadas Tipo, desgaste y torque
+
+Tipo de problema Carga acumulada o sobreesfuerzo
+
+Implicación Las variables categóricas pueden modificar la interpretación de una condición numérica
+
+3.6.5 Random Failure - RNF La falla aleatoria tiene una probabilidad independiente de aproximadamente 0.1 % por proceso. Por su naturaleza, puede ser difícil de predecir a partir de las variables
+disponibles.
+
+Tipo de fenómeno Evento aleatorio
+
+Relación con sensores Puede no existir una señal clara previa
+
+Implicación No todas las fallas son igualmente predecibles
+
+Riesgo Penalizar al modelo por no predecir eventos sin patrón observable
+
+3.7 Variable objetivo principal La variable Machine failure representa la etiqueta binaria principal del dataset. En el archivo oficial comprobado, 339 de 10,000 registros tienen valor 1 y 9,661
+tienen valor 0 . Una limitación importante es que la variable agregada no siempre permite conocer qué modo específico originó la falla. Por este motivo, PredictMain debe diferenciar entre:
+
+Predicción binaria: falla o no falla. Diagnóstico multiclase: qué tipo de falla puede estar relacionado.
+
+Análisis de causa: interpretación técnica de la combinación de variables.
+
+3.8 Auditoría reproducible del archivo oficial
+
+La siguiente tabla proviene de la lectura directa del archivo ai4i2020.csv descargado desde el repositorio oficial de UCI. La auditoría se realizó sin modificar, limpiar ni balancear los registros.
+
+Verificación Resultado observado Interpretación
+
+Nombre del archivo ai4i2020.csv Archivo oficial incluido en el ZIP de UCI.
+
+Registros 10,000 Coincide con la documentación oficial.
+
+Columnas 14 Coincide con la documentación oficial.
+
+Valores faltantes 0 El archivo no contiene nulos en esta versión.
+
+Filas duplicadas completas 0 No se encontraron duplicados exactos.
+
+Identificadores UDI 10,000 valores únicos Cada registro tiene un identificador único.
+
+Product ID 10,000 valores únicos Cada producto tiene un identificador distinto.
+
+Fallas de máquina 339 3.39 % de los registros.
+
+Registros sin falla 9,661 96.61 % de los registros.
+
+Tipo L 6,000 60.00 % de los registros.
+
+Tipo M 2,997 29.97 % de los registros.
+
+Tipo H 1,003 10.03 % de los registros.
+
+3.8.1 Rangos observados en el archivo
+
+Variable Mínimo Máximo Promedio Desviación estándar
+
+Temperatura del aire [K] 295.3 304.5 300.0049 2.0003
+
+Temperatura del proceso [K] 305.7 313.8 310.0056 1.4837
+
+Velocidad de rotación [rpm] 1,168 2,886 1,538.7761 179.2841
+
+Torque [Nm] 3.8 76.6 39.9869 9.9689
+
+Desgaste de herramienta [min] 0 253 107.9510 63.6541
+
+3.8.2 Conteo comprobado de los modos de falla
+
+Código Modo de falla Registros con etiqueta 1 Porcentaje sobre 10,000
+
+TWF Tool Wear Failure 46 0.46 %
+
+HDF Heat Dissipation Failure 115 1.15 %
+
+PWF Power Failure 95 0.95 %
+
+OSF Overstrain Failure 98 0.98 %
+
+RNF Random Failure 19 0.19 %
+
+Los modos pueden aparecer simultáneamente en un mismo registro. En la auditoría se observaron 324 registros con un modo activo, 23 con dos modos activos y 1 con tres modos activos. También se
+observaron 9 registros donde Machine failure1 no coincide con ningún indicador específico activo y 18 registros con algún indicador específico activo pero Machine failure0 . Esta inconsistencia entre
+columnas debe conservarse como hallazgo de calidad y revisarse antes de utilizar simultáneamente la etiqueta agregada y las etiquetas de modo como objetivos del modelo.
+
+3.8.3 Diferencia entre documentación y datos observados
+
+Aspecto Documentación de UCI Archivo comprobado Decisión para PredictMain
+
+Naturaleza Dataset sintético que representa Confirmado mediante Declararlo sintético, no real datos industriales archivo oficial de planta.
+
+Registros 10,000 10,000 Aceptado.
+
+Columnas 14 14 Aceptado.
+
+Valores No 0 valores faltantes Aceptado. faltantes
+
+Distribución Descripción conceptual en la 60.00/29.9710.03 % Utilizar los conteos reales L/M/H documentación del archivo.
+
+Fallas Reglas generativas descritas 339 etiquetas agregadas Utilizar el archivo como fuente de verdad experimental.
+
+Modos Reglas TWF/HDF/PWF/OSF/RNF Conteos y solapamientos Validar consistencia antes específicos descritas comprobados del modelado multiclase.
+
+Regla de trazabilidad: cuando una cifra de la descripción y una cifra calculada del archivo difieran, PredictMain conservará ambas: la primera como información documental y la segunda como resultado
+de auditoría del archivo utilizado.
+
+4. Investigación 1: comparación de modelos, balanceo y selección de características
+
+4.1 Identificación
+
+Título: Comparative Evaluation of Machine Learning Models for Predictive Maintenance Using the AI4I 2020 Dataset: Effects of Data Balancing and Feature Selection Autores: Juan Carlos Gonzalez Islas,
+Jesus Vargas-Ortiz, Aldo Márquez-Grajales, Ernesto Bolaños-Rodríguez, Asdrúbal López-Chau y Rosa María Ortega-Mendoza Año: 2026 Revista: ITEGAM-JETIA DOI: 10.5935/jetia.v12i60.3878
+
+4.2 Propósito
+
+La investigación compara varios algoritmos de aprendizaje automático para clasificar fallas de máquinas usando AI4I 2020. También estudia cómo afectan al desempeño del modelo las estrategias de
+balanceo de datos y la selección de características.
+
+4.3 Modelos evaluados
+
+Modelo Tipo Uso dentro del estudio
+
+Random Forest Ensamble de árboles Clasificación robusta y comparación principal.
+
+Decision Tree / J48 Árbol de decisión Modelo interpretable.
+
+ANN Red neuronal artificial Comparación con modelos no lineales.
+
+KNN Basado en vecinos Clasificación por similitud.
+
+Naive Bayes Probabilístico Línea de comparación sencilla.
+
+4.4 Escenarios de datos
+
+Escenario Descripción
+
+Dataset original Conserva la distribución desbalanceada.
+
+SMOTE Genera ejemplos sintéticos de la clase minoritaria.
+
+Undersampling Reduce ejemplos de la clase mayoritaria.
+
+Conjunto completo de características Utiliza todas las variables consideradas.
+
+Conjunto reducido Utiliza un subconjunto seleccionado de variables.
+
+4.5 Métricas
+
+Métrica Qué indica
+
+Accuracy Proporción total de clasificaciones correctas.
+
+Precision Proporción de predicciones positivas que realmente son positivas.
+
+Recall Proporción de fallas reales detectadas.
+
+Specificity Capacidad para reconocer la clase negativa.
+
+F1-score Equilibrio entre precision y recall.
+
+4.6 Conocimiento incorporado al corpus
+
+La accuracy puede resultar engañosa cuando las fallas son poco frecuentes.
+
+El recall de la clase de falla es especialmente importante para mantenimiento predictivo.
+
+Las técnicas de balanceo deben evaluarse, no aplicarse automáticamente. La selección de características puede reducir ruido y complejidad.
+
+Un conjunto de variables reducido no necesariamente es peor que uno completo. Las conclusiones dependen del modelo, distribución y escenario de datos.
+
+4.7 Aplicación en PredictMain Esta investigación respalda la necesidad de comparar una línea base con modelos como Random Forest y XGBoost, registrar la distribución de clases y analizar falsos
+negativos. También justifica que la selección de variables sea una decisión documentada y no una eliminación arbitraria de columnas.
+
+5. Investigación 2: modelos de machine learning y deep learning con AI4I 2020
+
+5.1 Identificación
+
+Título: Evaluating Machine Learning and Deep Learning Models for Predictive Maintenance: A Study Using the AI4I 2020 Dataset Autores: Rajesh R. Waghulde, Rajesh Kumar Rai, Ram Milan Chadhar, Milind
+Rane y Vijeta Yadav Año: 2025 Revista: Journal of Neonatal Surgery
+
+5.2 Propósito
+
+El estudio evalúa modelos de machine learning y deep learning para anticipar fallas de maquinaria utilizando AI4I 2020.
+
+5.3 Modelos analizados
+
+Modelo Característica
+
+Random Forest Ensamble de árboles y modelo robusto para datos tabulares.
+
+SVM Clasificador basado en fronteras de separación.
+
+XGBoost Ensamble de boosting con alto desempeño en datos tabulares.
+
+Red neuronal profunda Modelo capaz de aprender relaciones no lineales complejas.
+
+5.4 Métricas utilizadas
+
+Accuracy. Precision.
+
+Recall.
+
+F1-score.
+
+5.5 Hallazgo principal La investigación reporta valores de F1-score superiores a 0.995 en varios clasificadores y tipos de falla. El artículo relaciona este comportamiento con:
+
+La calidad del dataset. Relaciones claras entre características y etiquetas.
+
+Bajo nivel de ruido. Naturaleza sintética del conjunto de datos.
+
+5.6 Interpretación crítica
+
+Los resultados altos no deben interpretarse automáticamente como evidencia de que el modelo está listo para una planta real. Un dataset sintético y limpio puede ser más fácil de clasificar que datos
+obtenidos de sensores industriales con:
+
+Ruido. Valores faltantes.
+
+Cambios de calibración. Lecturas irregulares.
+
+Diferentes condiciones de operación. Fallas no representadas en el entrenamiento.
+
+5.7 Aplicación en PredictMain
+
+Esta investigación aporta modelos candidatos y métricas de comparación, pero también introduce una regla de interpretación:
+
+Un resultado excelente en AI4I 2020 debe acompañarse de un análisis de generalización, limitaciones y diferencia entre datos sintéticos y datos industriales.
+
+6. Investigación 3: escasez de datos, desbalance y selección de características
+
+6.1 Identificación
+
+Título: Strategies for Overcoming Data Scarcity, Imbalance, and Feature Selection Challenges in Machine Learning Models for Predictive Maintenance Autor: Ali Hakami Año: 2024
+
+Revista: Scientific Reports DOI: 10.1038/s41598-024-59958-9
+
+6.2 Problemas abordados
+
+Problema Descripción
+
+Escasez de datos Existen pocos ejemplos de fallas en comparación con datos normales.
+
+Desbalance La clase normal puede dominar el conjunto de entrenamiento.
+
+Dependencia temporal Las lecturas de sensores pueden depender de mediciones previas.
+
+Selección de características No todas las variables contienen la misma información predictiva.
+
+Horizonte de falla Es necesario definir qué periodo se considera cercano a una falla.
+
+6.3 Técnicas utilizadas
+
+Técnica Finalidad
+
+Generación de datos sintéticos Aumentar la representación de situaciones poco frecuentes.
+
+GAN Generar datos con patrones similares a los observados.
+
+LSTM Extraer patrones temporales de secuencias.
+
+Failure horizon Definir una ventana alrededor del evento de falla.
+
+Extracción temporal Construir características que representen evolución y tendencia.
+
+6.4 Resultados reportados El estudio reporta resultados de clasificación para diferentes modelos después de utilizar estrategias de generación y extracción temporal:
+
+Modelo Accuracy reportada
+
+ANN 88.98 %
+
+Random Forest 74.15 %
+
+Decision Tree 73.82 %
+
+KNN 74.02 %
+
+XGBoost 73.93 %
+
+Estos valores deben interpretarse dentro del contexto experimental de la investigación y no como resultados directamente transferibles a PredictMain.
+
+6.5 Aplicación en PredictMain
+
+Esta fuente ayuda a comprender que un modelo puede mostrar accuracy alta y, aun así, fallar en la clase minoritaria. Para PredictMain, la evaluación deberá analizar:
+
+Recall de la clase de falla. Falsos negativos.
+
+Distribución de fallas por tipo. Efecto del balanceo.
+
+Posible dependencia entre registros. Calidad de los datos antes del entrenamiento.
+
+7. Investigación 4: mantenimiento predictivo en Industry 4.0
+
+7.1 Identificación Título: Predictive Maintenance in Industry 4.0: A Survey of Planning Models and Machine Learning Techniques Autores: Ida Hector y Rukmani Panjanathan Año: 2024 Revista: PeerJ
+Computer Science DOI: 10.7717/peerj-cs.2016
+
+7.2 Propósito
+
+La investigación presenta una revisión de modelos de planeación y técnicas de aprendizaje automático utilizadas en mantenimiento predictivo dentro de Industry 4.0.
+
+7.3 Etapas del mantenimiento predictivo
+
+Etapa Conocimiento principal
+
+Captura de datos Sensores, IoT y sistemas de monitoreo generan información operativa.
+
+Preparación Se revisan calidad, valores faltantes, outliers y consistencia.
+
+Selección de características Se identifican las variables más útiles para representar el estado del equipo.
+
+Modelado Se aplican algoritmos de clasificación, regresión o detección de anomalías.
+
+Monitoreo Se observa el estado del activo durante la operación.
+
+Decisión La predicción se transforma en una acción de inspección o mantenimiento.
+
+Mejora continua Se actualizan modelos y procesos con nueva evidencia.
+
+7.4 Técnicas identificadas
+
+Técnica Aplicación en mantenimiento predictivo
+
+Random Forest Clasificación de defectos y fallas.
+
+XGBoost Modelado de estados y predicción con datos tabulares.
+
+SVM Clasificación de condiciones de equipos.
+
+Redes neuronales Relaciones no lineales y reconocimiento de patrones.
+
+LSTM Series temporales y degradación progresiva.
+
+Clustering Agrupación de estados operativos.
+
+Isolation Forest Detección de anomalías.
+
+PCA Reducción y selección de características.
+
+TF-IDF Extracción de características en registros textuales de mantenimiento.
+
+7.5 Conocimiento incorporado
+
+El mantenimiento predictivo es un proceso completo, no únicamente un algoritmo. Los datos deben relacionarse con decisiones operativas.
+
+La selección de características influye en la calidad del modelo. El conocimiento de dominio ayuda a interpretar anomalías.
+
+La detección de anomalías puede identificar comportamientos inusuales, pero no siempre explica la causa exacta. La arquitectura IoT permite obtener datos continuamente, pero introduce retos de
+volumen, latencia y calidad.
+
+8. Investigación 5: mejora del mantenimiento predictivo con XGBoost y ventana deslizante
+
+8.1 Identificación Título: Enhancing Predictive Maintenance Method Using Machine Learning to Improve IoT-Embedded Machinery Efficiency and Performance Autores: Abiinesh Nadarajan, Iskandar Ishak,
+Noridayu Manshor, Raihani Mohamed y Mohamad Yusnisyahmi Yusof Año: 2025 Revista: International Journal of Advanced Computer Science and Applications, volumen 16, número 10 Fuente: IJACSA - PDF del
+artículo
+
+8.2 Problema investigado
+
+El artículo parte de la dificultad de alcanzar simultáneamente:
+
+Alta precisión. Bajo tiempo de entrenamiento.
+
+Baja latencia de predicción. Capacidad para procesar grandes volúmenes de datos.
+
+Manejo de datasets desbalanceados.
+
+Adaptabilidad a maquinaria integrada con IoT.
+
+8.3 Método propuesto
+
+La investigación propone un método denominado E.XGB, basado en:
+
+Método de ventana deslizante.
+
+Modelo XGBoost.
+
+Preprocesamiento avanzado. Importancia por permutación.
+
+Optimización de hiperparámetros. Validación cruzada.
+
+8.4 Datasets utilizados
+
+Dataset Naturaleza Propósito
+
+AI4I 2020 Sintético Evaluar el método en un dataset de referencia reproducible.
+
+CNC Milling Dataset Real Evaluar el método en condiciones más cercanas a un entorno industrial.
+
+El uso de dos datasets busca reducir la dependencia de un único conjunto de datos y analizar la robustez frente a distribuciones diferentes.
+
+8.5 Metodología
+
+El estudio utiliza CRISP-DM como marco metodológico. Las actividades descritas incluyen:
+
+Fase Actividad reportada
+
+Comprensión y adquisición Uso de datasets de mantenimiento predictivo.
+
+Preprocesamiento Limpieza, tratamiento del desbalance, suavizado y estandarización.
+
+División Separación aproximada de 80 % para entrenamiento y 20 % para prueba.
+
+Creación del modelo Replicación de un modelo previo y creación de modelos de referencia.
+
+Importancia de variables Análisis de características antes del entrenamiento.
+
+Optimización Ajuste de hiperparámetros y validación cruzada.
+
+Evaluación Métricas, matriz de confusión y curvas ROC.
+
+Comparación Contraste con AdaBoost, Decision Tree, Random Forest y SVM.
+
+8.6 Modelos comparados
+
+Modelo Papel
+
+E.XGB Método propuesto con XGBoost y ventana deslizante.
+
+Decision Tree Modelo de referencia.
+
+Random Forest Ensamble de árboles de referencia.
+
+SVM Modelo de clasificación comparativo.
+
+AdaBoost / E.AB Método usado como referencia adicional.
+
+8.7 Métricas utilizadas
+
+Accuracy.
+
+Precision. Recall.
+
+F1-score. ROC-AUC.
+
+Tiempo de entrenamiento. Tiempo de predicción.
+
+Latencia.
+
+8.8 Resultados reportados
+
+Dataset Accuracy reportada para E.XGB
+
+AI4I 2020 99.05 %
+
+CNC Milling 99.01 %
+
+El artículo también reporta mejoras aproximadas de velocidad frente al método de referencia E.AB:
+
+Indicador Mejora reportada
+
+Velocidad de entrenamiento Aproximadamente 94 %
+
+Velocidad de predicción Aproximadamente 99.8 %
+
+Estas cifras pertenecen al contexto experimental del artículo y no deben transferirse directamente a PredictMain sin reproducir las condiciones, particiones, variables, hardware y configuraciones
+utilizadas.
+
+8.9 Aporte para PredictMain
+
+Esta investigación aporta cuatro ideas relevantes:
+
+1. La accuracy no es suficiente: también deben medirse tiempos de entrenamiento y predicción. 2. La validación con más de un dataset mejora el análisis: AI4I 2020 permite reproducibilidad y CNC
+Milling aporta mayor cercanía al mundo real. 3. XGBoost es un candidato importante para datos tabulares: especialmente cuando se combina con selección de variables y ajuste de hiperparámetros.
+
+4. CRISP-DM es compatible con el desarrollo del proyecto: permite organizar comprensión, preparación, modelado y evaluación.
+
+8.10 Precauciones de interpretación
+
+AI4I 2020 es sintético y no contiene todos los problemas de una captura industrial real.
+
+El uso de ventana deslizante puede modificar la representación temporal de los datos. Los resultados dependen de la partición, preprocesamiento y configuración experimental.
+
+La velocidad reportada depende del hardware y del entorno de ejecución. La validación cruzada debe aplicarse sin permitir fuga de información entre entrenamiento y prueba.
+
+9. Comparación general de las investigaciones
+
+Fuente Dataset Modelos o método Problema principal Aporte para PredictMain
+
+Gonzalez Islas AI4I 2020 RF, DT, ANN, KNN, Balanceo y selección Comparar modelos y et al. Naive Bayes de características estudiar desbalance.
+
+Waghulde et AI4I 2020 RF, SVM, XGBoost Desempeño de Analizar resultados al. y deep learning ML/DL y altos con cautela. generalización
+
+Hakami Dataset de GAN, LSTM, ANN, Escasez, desbalance Estudiar fallas mantenimiento RF, DT, KNN y y temporalidad minoritarias y ventanas predictivo XGBoost de falla.
+
+Hector y Diversos estudios ML, IoT, detección Planeación integral Entender el ciclo Panjanathan de anomalías y de PdM completo del dominio. RUL
+
+Nadarajan et AI4I 2020 y CNC E.XGB, XGBoost, Precisión, velocidad Relacionar desempeño al. Milling DT, RF, SVM y y latencia del modelo con tiempo AdaBoost real.
+
+10. Conocimiento consolidado sobre los datos
+
+10.1 Datos normales y datos de falla El dataset contiene muchas más observaciones de operación normal que de falla. Esta característica puede producir un modelo con accuracy alta pero con poca
+capacidad para detectar fallas reales. Por ello, deben distinguirse:
+
+Concepto Significado
+
+Verdadero positivo El modelo identifica una falla que realmente ocurrió.
+
+Verdadero negativo El modelo identifica operación normal correctamente.
+
+Falso positivo El modelo anuncia una falla que no ocurrió.
+
+Falso negativo El modelo no detecta una falla real.
+
+En mantenimiento predictivo, el falso negativo puede ser especialmente costoso porque representa una falla no detectada.
+
+10.2 Variables individuales y combinadas
+
+Algunas fallas no dependen de una sola variable. Pueden surgir de la relación entre varias mediciones.
+
+Relación Fenómeno que puede representar
+
+Temperatura del proceso temperatura del aire Disipación térmica.
+
+Torque velocidad angular Potencia aproximada.
+
+Desgaste torque Sobreesfuerzo.
+
+Tipo de producto + desgaste Umbral de carga dependiente de la variante.
+
+Velocidad + temperatura Condiciones operativas combinadas.
+
+10.3 Importancia de la ingeniería de características La ingeniería de características puede ayudar a expresar mejor fenómenos físicos y operativos. Sin embargo, debe realizarse sin fuga de
+información. Las transformaciones y estadísticas utilizadas para entrenar el modelo deben ajustarse únicamente con el conjunto de entrenamiento y aplicarse después al conjunto de prueba.
+
+11. Conocimiento consolidado sobre los modelos
+
+Modelo Fortalezas Precauciones
+
+Random Robusto, útil para datos tabulares y Puede producir modelos grandes y no siempre Forest relativamente interpretable. optimiza latencia.
+
+XGBoost Alto desempeño en datos tabulares, flexible Requiere ajuste de hiperparámetros y control y eficiente. contra sobreajuste.
+
+Decision Fácil de explicar y visualizar. Puede sobreajustarse y ser inestable ante Tree pequeños cambios.
+
+SVM Eficaz en problemas de clasificación con Puede ser costoso con grandes volúmenes y fronteras complejas. requiere escalamiento.
+
+KNN Sencillo y basado en similitud. La predicción puede ser lenta y sensible a escalas.
+
+Naive Bayes Rápido y sencillo como línea base. Sus supuestos de independencia pueden ser poco realistas.
+
+ANN Capaz de aprender relaciones no lineales. Requiere configuración, datos y control de interpretabilidad.
+
+LSTM Adecuado para secuencias y dependencia Mayor complejidad y necesidad de secuencias temporal. bien estructuradas.
+
+GAN Puede generar ejemplos sintéticos. Los datos generados no sustituyen automáticamente los datos reales.
+
+12. Métricas de evaluación consolidadas
+
+Métrica Pregunta que responde Importancia en PredictMain
+
+Accuracy ¿Qué proporción total clasificó correctamente? Útil, pero insuficiente con desbalance.
+
+Precision De las alertas emitidas, ¿cuántas fueron Ayuda a reducir falsas alarmas. correctas?
+
+Recall De las fallas reales, ¿cuántas detectó? Fundamental para reducir fallas no detectadas.
+
+F1-score ¿Existe equilibrio entre precision y recall? Útil cuando ambas importan.
+
+Specificity ¿Qué tan bien reconoce la operación normal? Ayuda a controlar falsas alarmas.
+
+ROC-AUC ¿Qué tan bien separa las clases en distintos Permite comparar capacidad umbrales? discriminativa.
+
+PR-AUC ¿Qué tan bien identifica positivos en clases Puede ser más informativa cuando la desbalanceadas? falla es rara.
+
+Matriz de confusión ¿Qué tipos de aciertos y errores produce? Permite analizar falsos positivos y negativos.
+
+Tiempo de ¿Cuánto tarda en actualizarse el modelo? Importante para mantenimiento y entrenamiento reentrenamiento.
+
+Latencia de ¿Cuánto tarda en producir una predicción? Importante para alertas cercanas al predicción tiempo real.
+
+13. Principales riesgos técnicos identificados
+
+Riesgo Explicación
+
+Generalización limitada Un modelo puede funcionar en AI4I 2020 y fallar con datos reales.
+
+Desbalance La clase normal puede ocultar el bajo desempeño en fallas.
+
+Datos sintéticos Las relaciones entre variables pueden ser demasiado claras o artificiales.
+
+Fuga de información Una transformación mal aplicada puede usar información del conjunto de prueba.
+
+Sobreajuste El modelo puede memorizar patrones del dataset.
+
+Falla aleatoria RNF puede no tener una señal observable.
+
+Interpretación incorrecta Correlación no significa necesariamente causa física.
+
+Variables redundantes Algunas columnas pueden duplicar o derivar información ya disponible.
+
+Ventanas temporales Una ventana puede mezclar registros o introducir dependencia artificial. inadecuadas
+
+Métrica insuficiente Accuracy alta puede ocultar muchos falsos negativos.
+
+Dependencia de hardware Los tiempos reportados no son universales.
+
+Cambio de distribución Una máquina real puede operar en condiciones diferentes.
+
+14. Reglas de interpretación para PredictMain
+
+1. No considerar AI4I 2020 como una planta real. Es un dataset sintético diseñado para representar condiciones de mantenimiento predictivo. 2. No aceptar accuracy como única evidencia. Se deben
+revisar recall, precision, F1-score y matriz de confusión.
+
+3. Priorizar el análisis de falsos negativos. Una falla no detectada puede tener mayor costo operativo que una falsa alarma. 4. Separar predicción de diagnóstico. Predecir que existe una falla no
+equivale a identificar su causa.
+
+5. Registrar la distribución de clases. Toda evaluación debe indicar cuántas observaciones corresponden a cada clase.
+
+6. Comparar modelos con la misma partición. Las diferencias de desempeño solo son válidas si las condiciones son comparables. 7. Prevenir fuga de información. El preprocesamiento debe ajustarse dentro
+del conjunto de entrenamiento.
+
+8. Documentar variables derivadas. Toda característica nueva debe tener una interpretación técnica. 9. Validar con datos diferentes cuando sea posible. Un segundo dataset puede revelar problemas de
+generalización.
+
+10. Consultar al experto del dominio. Las relaciones estadísticas deben contrastarse con el comportamiento de la maquinaria. 11. Medir rendimiento operativo. Si se busca tiempo real, deben medirse
+entrenamiento, inferencia y latencia.
+
+12. Distinguir evidencia publicada de decisión del proyecto. Un artículo puede orientar, pero no sustituye la validación de PredictMain.
+
+15. Glosario técnico
+
+Término Definición sencilla
+
+Mantenimiento predictivo Estrategia que utiliza datos para anticipar fallas y planificar acciones.
+
+Telemetría Datos obtenidos de sensores o sistemas de operación.
+
+Machine learning Métodos que aprenden patrones a partir de datos.
+
+Clasificación Asignación de una observación a una categoría.
+
+Falla binaria Clasificación entre falla y no falla.
+
+Falla multiclase Clasificación entre varios tipos de falla.
+
+Desbalance Diferencia importante en el número de ejemplos de cada clase.
+
+SMOTE Técnica que genera ejemplos sintéticos de una clase minoritaria.
+
+Undersampling Reducción de ejemplos de la clase mayoritaria.
+
+Feature Variable utilizada por un modelo.
+
+Selección de Elección de las variables más útiles para predecir. características
+
+Ingeniería de Creación o transformación de variables para representar mejor un fenómeno. características
+
+Ventana deslizante Segmento móvil de observaciones usado para analizar una secuencia.
+
+Recall Proporción de positivos reales que el modelo detecta.
+
+Falso negativo Falla real que el modelo clasifica como normal.
+
+Falso positivo Alerta de falla que no corresponde a una falla real.
+
+XGBoost Algoritmo de boosting basado en árboles de decisión.
+
+Random Forest Ensamble de múltiples árboles de decisión.
+
+LSTM Red neuronal recurrente orientada a secuencias y dependencias temporales.
+
+ROC-AUC Medida de capacidad de separación entre clases.
+
+Latencia Tiempo que tarda el sistema en responder o producir una predicción.
+
+Generalización Capacidad de funcionar correctamente con datos no utilizados durante el entrenamiento.
+
+CRISP-DM Metodología cíclica para proyectos de minería de datos.
+
+IoT Conjunto de dispositivos y sensores conectados que generan datos.
+
+16. Síntesis final del corpus
+
+El conocimiento reunido permite establecer las siguientes conclusiones para PredictMain:
+
+AI4I 2020 es una base adecuada para iniciar la experimentación, pero es sintética.
+
+Las fallas están relacionadas con condiciones físicas y combinaciones de variables. El desbalance es un problema central en la clasificación de fallas.
+
+Recall, F1-score y matriz de confusión son esenciales para valorar el modelo. Random Forest y XGBoost son candidatos sólidos para datos tabulares.
+
+SVM, árboles, KNN, redes neuronales y LSTM pueden servir para comparación según el tipo de datos. La selección de características debe justificarse técnicamente.
+
+La creación de variables derivadas puede representar mejor fenómenos como potencia, disipación térmica y sobreesfuerzo. Los datos sintéticos pueden producir resultados demasiado optimistas.
+
+La validación con un dataset real o con datos de otro contexto aumenta la confianza en la generalización. La investigación reciente propone combinar ventana deslizante, XGBoost, importancia por
+permutación y optimización de hiperparámetros. La velocidad de entrenamiento y la latencia de predicción son relevantes cuando el sistema debe operar cerca del tiempo real.
+
+CRISP-DM proporciona una estructura adecuada para avanzar desde la comprensión del negocio hasta la evaluación del modelo.
+
+El experto del dominio es necesario para verificar que los patrones estadísticos tengan sentido industrial.
+
+Conclusión del corpus: PredictMain debe construirse como un sistema de análisis experimental, trazable y progresivo. Primero debe comprender los datos y sus limitaciones; después comparar modelos con
+métricas adecuadas; finalmente, comprobar si los resultados se mantienen fuera del dataset sintético antes de presentar el modelo como una solución aplicable a maquinaria real.
+
+17. Documentación primaria del dataset
+
+17.1 Fuente oficial UCI La ficha oficial de UCI identifica AI4I 2020 como un dataset sintético que refleja datos de mantenimiento predictivo encontrados en la industria. También registra 10,000
+instancias, 14 columnas, tareas de clasificación y regresión, ausencia de valores faltantes y la licencia CC BY 4.0. La ficha oficial debe considerarse la referencia principal para: nombre del
+dataset, archivo de descarga, variables, licencia, DOI y procedencia.
+
+17.2 Artículo introductorio de Stephan Matzka
+
+El artículo Explainable Artificial Intelligence for Predictive Maintenance Applications, presentado en 2020, introduce un dataset realista pero sintético para aplicaciones de mantenimiento predictivo
+explicable. Es la fuente académica primaria
+
+asociada al dataset en la ficha de UCI. Su importancia para PredictMain es doble:
+
+1. Explica el propósito experimental del dataset.
+
+2. Confirma que el conjunto no debe presentarse como medición histórica real de una planta.
+
+17.3 Evidencia de descarga utilizada
+
+La auditoría de esta versión se realizó sobre el ZIP oficial de UCI:
+
+URL: https://archive.ics.uci.edu/static/public/601/ai4i+2020+predictive+maintenance+dataset.zip Archivo interno: ai4i2020.csv
+
+Copia local auditada: PredictMainAI4I2020Oficial.csv
+
+Registros leídos: 10,000 Columnas leídas: 14
+
+Valores faltantes encontrados: 0 Duplicados completos encontrados: 0
+
+Transformaciones aplicadas antes de la auditoría: ninguna SHA-256 de la copia auditada: dc6630cd9b1f0f853922fad78a1b6436570d3f1ec863f1dd5c4340ac56bc8a8e
+
+18. Catálogo de fuentes
+
+ID Referencia Enlace
+
+SRC- Gonzalez Islas et al. (2026). Comparative Evaluation of Machine Learning Models ITEGAM-JETIA 001 for Predictive Maintenance Using the AI4I 2020 Dataset: Effects of Data Balancing and Feature
+Selection.
+
+SRC- Waghulde et al. (2025). Evaluating Machine Learning and Deep Learning Models Journal of 002 for Predictive Maintenance: A Study Using the AI4I 2020 Dataset. Neonatal Surgery
+
+SRC- Hakami (2024). Strategies for Overcoming Data Scarcity, Imbalance, and Feature Scientific Reports 003 Selection Challenges in Machine Learning Models for Predictive Maintenance. / Nature
+
+SRC- Hector y Panjanathan (2024). Predictive Maintenance in Industry 4.0: A Survey of PeerJ Computer 004 Planning Models and Machine Learning Techniques. Science / PMC
+
+SRC- Nadarajan et al. (2025). Enhancing Predictive Maintenance Method Using Machine IJACSA PDF 005 Learning to Improve IoT-Embedded Machinery Efficiency and Performance.
+
+SRC- UCI Machine Learning Repository. AI4I 2020 Predictive Maintenance Dataset. UCI Dataset
+
+SRC- Matzka, S. (2020). Explainable Artificial Intelligence for Predictive Maintenance IEEE Xplore 007 Applications.

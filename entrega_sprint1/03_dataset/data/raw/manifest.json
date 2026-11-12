@@ -1,0 +1,32 @@
+{
+  "manifest_version": "1.0",
+  "source_url": "https://archive.ics.uci.edu/static/public/601/ai4i+2020+predictive+maintenance+dataset.zip",
+  "file_name": "ai4i2020.csv",
+  "ingestion_date": "2026-11-12T05:24:59.138582Z",
+  "n_rows": 10000,
+  "n_columns": 14,
+  "columns": [
+    "UDI",
+    "Product ID",
+    "Type",
+    "Air temperature [K]",
+    "Process temperature [K]",
+    "Rotational speed [rpm]",
+    "Torque [Nm]",
+    "Tool wear [min]",
+    "Machine failure",
+    "TWF",
+    "HDF",
+    "PWF",
+    "OSF",
+    "RNF"
+  ],
+  "size_bytes": 522048,
+  "sha256": "dc6630cd9b1f0f853922fad78a1b6436570d3f1ec863f1dd5c4340ac56bc8a8e",
+  "data_layer": "raw",
+  "file_format": "CSV",
+  "encoding": "UTF-8",
+  "delimiter": ",",
+  "transformed": false,
+  "cleaned": false
+}
