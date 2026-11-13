@@ -21,7 +21,7 @@ class ProfilingService:
 
     FAILURE_MODES = ["TWF", "HDF", "PWF", "OSF", "RNF"]
 
-    # Rangos físicos según la especificación UCI AI4I 2020
+    # Physical ranges from UCI AI4I 2020 specification
     UCI_RANGES: dict[str, tuple[float, float]] = {
         "Air temperature [K]":      (295.3,  304.5),
         "Process temperature [K]":  (305.7,  313.8),
@@ -41,16 +41,16 @@ class ProfilingService:
         - Values outside the UCI physical range specification
         - Invalid values in categorical / binary columns
         """
-        # 1. Duplicados (fila completa)
+        # 1. Duplicates (full-row)
         duplicate_rows = int(df.duplicated().sum())
 
-        # 2. Nulos por columna — una sola pasada, sin doble evaluación
+        # 2. Nulls per column — single-pass, no double evaluation
         null_series = df.isna().sum()
         null_counts: dict[str, int] = {
             col: int(cnt) for col, cnt in null_series.items() if cnt > 0
         }
 
-        # 3. Valores fuera de rango (índices basados en 0)
+        # 3. Out-of-range values (indices, 0-based)
         out_of_range: dict[str, list[int]] = {}
         for col, (low, high) in self.UCI_RANGES.items():
             if col in df.columns:
@@ -59,7 +59,7 @@ class ProfilingService:
                 if bad_indices:
                     out_of_range[col] = bad_indices
 
-        # 4. Valores inválidos en columnas categóricas / binarias
+        # 4. Invalid categorical / binary values
         invalid_type_values: dict[str, int] = {}
         if "Type" in df.columns:
             bad = int((~df["Type"].isin(self.VALID_TYPES)).sum())

@@ -60,7 +60,7 @@ Los modos pueden solaparse. Un registro puede tener varios modos activos y sigue
 - 18 tienen `Machine failure = 0`.
 - 1 tiene `Machine failure = 1`.
 
-Esto explica la mayor parte de las inconsistencias entre etiqueta y modo. No se corrige el dato original.
+Los 18 registros con `RNF = 1` y `Machine failure = 0` son exactamente las 18 inconsistencias de la sección 4.1; ningún otro modo aparece activo con etiqueta 0. No se corrige el dato original.
 
 ## 6. Decisiones de etiquetado
 
@@ -93,9 +93,14 @@ La validación automática comprueba:
 - Que las 18 inconsistencias de etiqueta 0 con modo activo y las 9 de etiqueta 1 sin modo activo sigan documentadas.
 - Que el dataset etiquetado completo tenga 10,000 registros y conserve 339 fallas.
 - Que la columna `etiqueta` coincida exactamente con el mapeo de `Machine failure`.
-- Que la muestra tenga 30 registros y 15 fallas.
+- Que cada valor de `etiqueta` y `modos_activos` pertenezca al catálogo (`catalogo_etiquetas.md`).
+- Que ninguna etiqueta contradiga sus columnas de origen: `etiqueta` frente a `Machine failure` y `modos_activos` frente a `TWF`, `HDF`, `PWF`, `OSF` y `RNF`.
+- Que las 14 columnas originales del dataset etiquetado sean idénticas al dataset crudo.
+- Que la muestra tenga 30 registros y 15 fallas, y que cada registro coincida con el dataset completo.
 
-Resultado: **19 de 19 verificaciones aprobadas**.
+Un valor fuera del catálogo o una etiqueta contradictoria hace fallar la validación. El reporte identifica el `UDI`, la columna y el valor afectado, y el valor no se convierte a una categoría conocida: queda registrado para su corrección.
+
+Resultado: **23 de 23 verificaciones aprobadas**.
 
 ## 9. Evidencia
 

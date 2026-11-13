@@ -11,17 +11,23 @@
 | Archivo crudo | `data/raw/ai4i2020.csv` |
 | Registros | 10,000 |
 | Columnas | 14 |
-| Tamaño | 522,048 bytes |
-| SHA-256 | `dc6630cd9b1f0f853922fad78a1b6436570d3f1ec863f1dd5c4340ac56bc8a8e` |
+| Tamaño | 512,047 bytes |
+| SHA-256 | `59db4f1d9c34c58136d89e5a006ec190dcea19e9dbea74f6b3b0c6f22a44d183` |
 | Manifiesto | `data/raw/manifest.json` |
 | Codificación | UTF-8 |
 | Separador | coma |
 
-### 1.1 Nota sobre el manifiesto
+### 1.1 Reconciliación con la fuente canónica
 
-El repositorio original incluía un manifiesto con un hash distinto (`59db4f1d...`) al del CSV efectivamente incluido. Al ejecutar la ingesta, el servicio detectó la discrepancia y se negó a sobrescribir el manifiesto para proteger la integridad.
+La fuente de verdad del dataset y del pipeline está en `data/` y `ml_service/` en la raíz del repositorio. La carpeta `03_dataset/` es una copia de entrega sincronizada byte a byte con esas fuentes.
 
-Para esta entrega se regeneró un manifiesto consistente con el archivo incluido. El nuevo hash es `dc6630cd9b1f0f853922fad78a1b6436570d3f1ec863f1dd5c4340ac56bc8a8e`. La discrepancia se documenta en `evidencias/validacion_dataset.md`; el manifiesto obsoleto no forma parte de la entrega.
+Una versión anterior de esta entrega contenía el CSV con finales de línea CRLF (`dc6630cd...`, 522,048 bytes) y un manifiesto regenerado para ese archivo. Esa copia se reemplazó por el CSV canónico con finales de línea LF y su manifiesto original (`59db4f1d...`, 512,047 bytes).
+
+Ambos archivos tienen el mismo contenido: convertir los 10,001 finales de línea del CSV canónico a CRLF produce exactamente el SHA-256 `dc6630cd...`, que es el valor que el corpus (sección 17.3) registra para la copia auditada del ZIP oficial de UCI. La diferencia de 10,001 bytes corresponde a un carácter `\r` por línea.
+
+`scripts_evidencia/reconciliar_entrega.py` compara el manifiesto campo por campo, el SHA-256 de cada CSV, el código fuente, `requirements.txt` y `pipeline.joblib` con la fuente canónica, y verifica que el artefacto se pueda cargar. Si alguna copia está desactualizada, el script falla e indica la ruta afectada sin modificar ningún archivo.
+
+Evidencia: `evidencias/reconciliacion_entrega.md`.
 
 ## 2. Estructura del pipeline
 
@@ -156,18 +162,25 @@ Evidencia: `reports/outlier_report.md`.
 
 Variables de entrada finales:
 
-| Variable | Tratamiento |
-| :--- | :--- |
-| `Air temperature [K]` | Estandarización |
-| `Process temperature [K]` | Estandarización |
-| `Rotational speed [rpm]` | Estandarización |
-| `Torque [Nm]` | Estandarización |
-| `Tool wear [min]` | Estandarización |
-| `Temp_diff` | Variable derivada: `Process temperature - Air temperature`; estandarización |
-| `Type_L` | One-Hot Encoding |
-| `Type_M` | One-Hot Encoding |
+| Variable | Tratamiento | Justificación |
+| :--- | :--- | :--- |
+| `Air temperature [K]` | Estandarización | Las variables tienen escalas muy distintas (K, rpm, Nm, min); `StandardScaler` evita que las de mayor magnitud dominen el modelo. |
+| `Process temperature [K]` | Estandarización | Misma razón. |
+| `Rotational speed [rpm]` | Estandarización | Misma razón; los atípicos se conservan porque la estandarización no los recorta. |
+| `Torque [Nm]` | Estandarización | Misma razón. |
+| `Tool wear [min]` | Estandarización | Misma razón. |
+| `Temp_diff` | Variable derivada: `Process temperature - Air temperature`; estandarización | La diferencia térmica es el indicador físico de la falla por disipación de calor (HDF). |
+| `Type_L` | One-Hot Encoding | `Type` es categórica nominal (L, M, H); la codificación evita imponer un orden numérico. |
+| `Type_M` | One-Hot Encoding | Misma razón. |
 
-`Type_H` se elimina como categoría de referencia (`drop='first'`).
+`Type_H` se elimina como categoría de referencia (`drop='first'`) para evitar columnas colineales.
+
+Variables categóricas validadas:
+
+| Variable | Categorías esperadas | Distribución |
+| :--- | :--- | :--- |
+| `Type` | L, M, H | 6,000 / 2,997 / 1,003 |
+| `Type_L`, `Type_M` | 0, 1 | 6,000 y 2,997 registros con valor 1, consistentes con `Type` |
 
 Variables excluidas:
 
@@ -185,6 +198,17 @@ Resultado:
 
 Evidencia: `data/processed/ai4i2020_transformed.csv` y `ml_service/artifacts/pipeline.joblib`.
 
+### 3.6 Etiqueta objetivo
+
+| Elemento | Decisión | Justificación |
+| :--- | :--- | :--- |
+| `Machine failure` | Se conserva sin modificar como variable objetivo binaria | Es la etiqueta original de UCI; reetiquetar introduciría un sesgo no verificable. |
+| Distribución | 9,661 registros sin falla (96.61%) y 339 con falla (3.39%) | El desbalance se documenta y se trata en la estrategia de entrenamiento, no alterando los datos. |
+| Modos `TWF`, `HDF`, `PWF`, `OSF`, `RNF` | Se conservan en los datasets limpio y de atípicos, y se excluyen del transformado | Describen la causa de la falla y producirían fuga de información si se usaran como entrada. |
+| Inconsistencias etiqueta-modo | 27 registros conservados con su etiqueta original | Ver sección 3.3.2. |
+
+La validación comprueba que la distribución de la etiqueta sea idéntica en las cuatro etapas.
+
 ## 4. Comparativa de datasets
 
 | Etapa | Archivo | Filas | Columnas | Nulos | Fallas |
@@ -194,28 +218,44 @@ Evidencia: `data/processed/ai4i2020_transformed.csv` y `ml_service/artifacts/pip
 | Atípicos analizados | `ai4i2020_outlier_analyzed.csv` | 10,000 | 14 | 0 | 339 |
 | Transformado | `ai4i2020_transformed.csv` | 10,000 | 9 | 0 | 339 |
 
-Evidencia completa: `evidencias/comparativa_datasets.md`.
+Evidencia completa: `evidencias/comparativa_datasets.md`. Además de las dimensiones, la comparativa reporta las columnas agregadas o eliminadas por etapa (todas intencionales), las celdas modificadas en limpieza y análisis de atípicos (0 en ambas) y valores representativos del dataset crudo frente al transformado.
 
 ## 5. Validación
 
-Se ejecutaron 22 verificaciones automáticas sobre dimensiones, nulos, etiquetas, columnas, manifiesto y artefactos. Todas pasaron.
+`scripts_evidencia/validar_dataset_procesado.py` ejecuta 36 verificaciones sobre esquema, filas, nulos, duplicados, categorías de `Type`, distribución de la etiqueta en cada etapa, codificación one-hot, manifiesto y artefactos. Todas pasaron. Un hallazgo de cero registros se informa como verificación ejecutada con conteo 0, no como verificación omitida.
 
-Evidencia: `evidencias/validacion_dataset.md`.
+Si falta una entrada, el script falla indicando la ruta y no genera el reporte. Si un archivo no coincide con lo esperado, la verificación correspondiente aparece como `FALLA` y el script termina con código 1 sin corregir el archivo.
+
+Evidencia: `evidencias/validacion_dataset.md` y `evidencias/validacion_dataset.log`.
 
 ## 6. Reproducibilidad
 
+Entorno: Python 3.11 o superior con las dependencias de `ml_service/requirements.txt`.
+
 Desde `03_dataset/ml_service/`:
 
-```powershell
-python -m src.cli ingest --csv ..\data\raw\ai4i2020.csv --manifest ..\data\raw\manifest.json
-python -m src.cli profile --csv ..\data\raw\ai4i2020.csv --report ..\data\profiling\data-profile-2026-11-11.md
-python -m src.cli treat --csv ..\data\raw\ai4i2020.csv --output ..\data\processed\ai4i2020_clean.csv --report ..\reports\null_report.md
-python -m src.cli outliers --csv ..\data\processed\ai4i2020_clean.csv --output ..\data\processed\ai4i2020_outlier_analyzed.csv --report ..\reports\outlier_report.md
-python -m src.cli transform --csv ..\data\processed\ai4i2020_outlier_analyzed.csv --output ..\data\processed\ai4i2020_transformed.csv --pipeline artifacts\pipeline.joblib
+```bash
+python -m src.cli ingest --csv ../data/raw/ai4i2020.csv --manifest ../data/raw/manifest.json
+python -m src.cli profile --csv ../data/raw/ai4i2020.csv --report ../data/profiling/data-profile-2026-11-11.md
+python -m src.cli treat --csv ../data/raw/ai4i2020.csv --output ../data/processed/ai4i2020_clean.csv --report ../reports/null_report.md
+python -m src.cli outliers --csv ../data/processed/ai4i2020_clean.csv --output ../data/processed/ai4i2020_outlier_analyzed.csv --report ../reports/outlier_report.md
+python -m src.cli transform --csv ../data/processed/ai4i2020_outlier_analyzed.csv --output ../data/processed/ai4i2020_transformed.csv --pipeline artifacts/pipeline.joblib
 ```
 
-Log completo: `evidencias/pipeline_ejecucion.log`.
+> Las rutas deben indicarse explícitamente. Sin argumentos, el CLI resuelve la raíz del repositorio y escribiría sobre `data/` y `ml_service/` canónicos.
 
-## 7. Nota sobre traducción
+La última ejecución se realizó en una copia temporal limpia de `03_dataset/`. Los CSV procesados, el manifiesto y `pipeline.joblib` resultantes fueron idénticos byte a byte a los de la entrega; los reportes solo difieren en la fecha de generación.
 
-Las copias de los scripts en `03_dataset/ml_service/` conservan el código original. **Solo se tradujeron los comentarios `#` al español.** Los docstrings, strings, justificaciones de reportes y nombres de variables permanecen en su idioma original.
+Después, desde la raíz del repositorio:
+
+```bash
+python entrega_sprint1/03_dataset/scripts_evidencia/reconciliar_entrega.py
+python entrega_sprint1/03_dataset/scripts_evidencia/comparar_datasets.py
+python entrega_sprint1/03_dataset/scripts_evidencia/validar_dataset_procesado.py
+```
+
+Logs: `evidencias/pipeline_ejecucion.log` y `evidencias/validacion_dataset.log`.
+
+## 7. Copias del código
+
+Las copias de `03_dataset/ml_service/` son idénticas a `ml_service/` canónico, incluidos comentarios y docstrings. La reconciliación lo verifica por SHA-256 archivo por archivo.

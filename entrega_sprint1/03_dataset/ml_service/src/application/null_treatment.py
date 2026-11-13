@@ -82,7 +82,7 @@ class NullTreatmentService:
                 mode_series = df[col].mode()
                 fill_value = mode_series.iloc[0] if not mode_series.empty else np.nan
             else:
-                continue  # estrategia desconocida — se omite
+                continue  # unknown strategy — skip
 
             df.loc[null_mask, col] = fill_value
             stats[col].imputed_count = null_count
@@ -106,20 +106,20 @@ class NullTreatmentService:
         df = pd.read_csv(csv_path)
         total_rows = len(df)
 
-        # 1. Instantánea antes del tratamiento
+        # 1. Snapshot before treatment
         stats = self._build_column_stats(df, total_rows)
         total_nulls_before = sum(s.null_count_before for s in stats.values())
         rows_with_nulls_before = int(df.isna().any(axis=1).sum())
 
-        # 2. Eliminar filas con etiquetas faltantes
+        # 2. Drop rows with missing labels
         df, rows_dropped = self._apply_drop_rows(df, stats)
 
-        # 3. Imputar columnas de sensores
+        # 3. Impute sensor columns
         df = self._apply_imputations(df, stats)
 
         total_imputed = sum(s.imputed_count for s in stats.values())
 
-        # 4. Escribir el dataset limpio
+        # 4. Write cleaned dataset
         output_csv_path.parent.mkdir(parents=True, exist_ok=True)
         df.to_csv(output_csv_path, index=False)
 
@@ -136,7 +136,7 @@ class NullTreatmentService:
             rows_with_nulls_before=rows_with_nulls_before,
         )
 
-        # 5. Escribir el reporte de nulos
+        # 5. Write null report
         report_path.parent.mkdir(parents=True, exist_ok=True)
         report_path.write_text(build_null_report(result), encoding="utf-8")
 

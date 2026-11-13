@@ -23,6 +23,9 @@ Generado automáticamente por `scripts_evidencia/comparar_datasets.py`.
 | Etiqueta objetivo idéntica tras transformación | OK | 339 fallas |
 | Variables de entrada del modelo | OK | 8 variables |
 | Sin valores nulos en la salida | OK | 0 nulos |
+| Todos los cambios de columnas son intencionales | OK | 0 cambios no documentados |
+| Valores sin modificar en limpieza | OK | 0 celdas modificadas |
+| Valores sin modificar en análisis de atípicos | OK | 0 celdas modificadas |
 
 ## 3. Distribución de la variable objetivo
 
@@ -68,3 +71,42 @@ Generado automáticamente por `scripts_evidencia/comparar_datasets.py`.
 ### Transformado (HU-06)
 
 `Air temperature [K], Process temperature [K], Rotational speed [rpm], Torque [Nm], Tool wear [min], Temp_diff, Type_L, Type_M, Machine failure`
+
+## 7. Cambios de columnas entre etapas
+
+| Etapas | Cambio | Columna | Intencional | Justificación |
+| --- | --- | --- | --- | --- |
+| Crudo → Limpio (HU-04) | Sin cambios | - | Sí | Esquema conservado |
+| Limpio (HU-04) → Atípicos analizados (HU-05) | Sin cambios | - | Sí | Esquema conservado |
+| Atípicos analizados (HU-05) → Transformado (HU-06) | Agregada | `Temp_diff` | Sí | Variable derivada `Process temperature - Air temperature` (HU-06, sección 3.5). |
+| Atípicos analizados (HU-05) → Transformado (HU-06) | Agregada | `Type_L` | Sí | One-Hot Encoding de `Type` (HU-06, sección 3.5). |
+| Atípicos analizados (HU-05) → Transformado (HU-06) | Agregada | `Type_M` | Sí | One-Hot Encoding de `Type` (HU-06, sección 3.5). |
+| Atípicos analizados (HU-05) → Transformado (HU-06) | Eliminada | `UDI` | Sí | Identificador no predictivo excluido de las variables de entrada (HU-06). |
+| Atípicos analizados (HU-05) → Transformado (HU-06) | Eliminada | `Product ID` | Sí | Identificador no predictivo excluido de las variables de entrada (HU-06). |
+| Atípicos analizados (HU-05) → Transformado (HU-06) | Eliminada | `Type` | Sí | Reemplazada por `Type_L` y `Type_M`; `Type_H` es la categoría de referencia (HU-06). |
+| Atípicos analizados (HU-05) → Transformado (HU-06) | Eliminada | `TWF` | Sí | Modo de falla excluido para evitar fuga de información (HU-06). |
+| Atípicos analizados (HU-05) → Transformado (HU-06) | Eliminada | `HDF` | Sí | Modo de falla excluido para evitar fuga de información (HU-06). |
+| Atípicos analizados (HU-05) → Transformado (HU-06) | Eliminada | `PWF` | Sí | Modo de falla excluido para evitar fuga de información (HU-06). |
+| Atípicos analizados (HU-05) → Transformado (HU-06) | Eliminada | `OSF` | Sí | Modo de falla excluido para evitar fuga de información (HU-06). |
+| Atípicos analizados (HU-05) → Transformado (HU-06) | Eliminada | `RNF` | Sí | Modo de falla excluido para evitar fuga de información (HU-06). |
+
+## 8. Valores representativos (crudo frente a transformado)
+
+El dataset transformado estandariza las variables numéricas; por eso su media es cercana a 0 y su desviación estándar a 1.
+`Temp_diff` se calcula sobre el crudo para comparar la variable derivada.
+
+| Variable | Media cruda | Desv. cruda | Mín. / Máx. crudo | Media transformada | Desv. transformada |
+| --- | --- | --- | --- | --- | --- |
+| `Air temperature [K]` | 300.005 | 2.000 | 295.300 / 304.500 | -0.000 | 1.000 |
+| `Process temperature [K]` | 310.006 | 1.484 | 305.700 / 313.800 | 0.000 | 1.000 |
+| `Rotational speed [rpm]` | 1538.776 | 179.284 | 1168.000 / 2886.000 | -0.000 | 1.000 |
+| `Torque [Nm]` | 39.987 | 9.969 | 3.800 / 76.600 | 0.000 | 1.000 |
+| `Tool wear [min]` | 107.951 | 63.654 | 0.000 / 253.000 | 0.000 | 1.000 |
+| `Temp_diff` | 10.001 | 1.001 | 7.600 / 12.100 | -0.000 | 1.000 |
+
+## 9. Cambios intencionales por etapa
+
+- Limpieza (HU-04): 0 celdas modificadas y 0 filas eliminadas; no había nulos que imputar.
+- Análisis de atípicos (HU-05): 0 celdas modificadas; los atípicos se conservan y solo se documentan.
+- Transformación (HU-06): estandarización de variables numéricas, `Temp_diff` derivada, One-Hot de `Type` y exclusión de identificadores y modos de falla.
+- La etiqueta `Machine failure` se conserva sin cambios en todas las etapas.

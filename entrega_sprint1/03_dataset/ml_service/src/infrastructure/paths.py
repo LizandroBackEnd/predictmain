@@ -13,7 +13,7 @@ def find_workspace_root(start_path: Path | None = None) -> Path:
         if any((candidate / marker).exists() for marker in markers):
             return candidate
 
-    # Respaldo: tres niveles arriba desde este archivo (ml_service/src/infrastructure/paths.py)
+    # Fallback to three levels up from this file (ml_service/src/infrastructure/paths.py)
     return Path(__file__).resolve().parents[3]
 
 
@@ -31,23 +31,23 @@ class ProjectPaths:
         self.docs_dir = self.root / "docs"
         self.analysis_docs_dir = self.docs_dir / "03-analysis"
 
-        # Los reportes de perfilado van a data/profiling/ con nombre fechado
+        # Profiling reports go to data/profiling/ with a date-stamped filename
         self.profiling_reports_dir = self.data_dir / "profiling"
 
         self.ml_service_dir = self.root / "ml_service"
         self.artifacts_dir = self.ml_service_dir / "artifacts"
 
-        # Rutas de HU-04
+        # HU-04 paths
         self.clean_csv_path = self.processed_data_dir / "ai4i2020_clean.csv"
         self.reports_dir = self.root / "reports"
         self.null_report_path = self.reports_dir / "null_report.md"
 
-        # Rutas de HU-05
+        # HU-05 paths
         self.notebooks_dir = self.ml_service_dir / "notebooks"
         self.outlier_report_path = self.reports_dir / "outlier_report.md"
         self.outlier_csv_path = self.processed_data_dir / "ai4i2020_outlier_analyzed.csv"
 
-        # Rutas de HU-06
+        # HU-06 paths
         self.pipeline_path = self.artifacts_dir / "pipeline.joblib"
         self.transformed_csv_path = self.processed_data_dir / "ai4i2020_transformed.csv"
 
@@ -57,5 +57,5 @@ class ProjectPaths:
         return self.profiling_reports_dir / f"data-profile-{today}.md"
 
 
-# Instancia singleton global
+# Global singleton instance
 paths = ProjectPaths()

@@ -21,6 +21,15 @@
 | `Sin falla` | 0 | El registro no representa una falla operativa. |
 | `Falla` | 1 | El registro representa una falla operativa. |
 
+La columna `modos_activos` solo admite dos formas:
+
+| Valor | Criterio de asignación |
+| :--- | :--- |
+| `Ninguno` | Todas las columnas `TWF`, `HDF`, `PWF`, `OSF` y `RNF` valen 0. |
+| Lista de códigos | Códigos de los modos con valor 1, separados por `, ` y en el orden `TWF`, `HDF`, `PWF`, `OSF`, `RNF` (por ejemplo, `HDF, OSF`). |
+
+`Ninguno` no puede combinarse con códigos. Cualquier otro valor se considera fuera del catálogo.
+
 ## 3. Modos de falla
 
 Los modos de falla son columnas auxiliares de diagnóstico. No sustituyen a la variable objetivo y pueden solaparse en un mismo registro.
@@ -54,7 +63,7 @@ Los modos de falla son columnas auxiliares de diagnóstico. No sustituyen a la v
 | :--- | :--- |
 | Registros con al menos un modo activo | 348 |
 | Registros con más de un modo activo | 24 |
-| Etiqueta 0 con algún modo activo | 18 |
+| Etiqueta 0 con algún modo activo (en los 18 casos, `RNF`) | 18 |
 | Etiqueta 1 sin ningún modo activo | 9 |
 | Total de inconsistencias | 27 |
 

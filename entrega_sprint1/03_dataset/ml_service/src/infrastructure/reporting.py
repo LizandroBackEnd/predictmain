@@ -7,7 +7,7 @@ from src.domain.outlier_rules import OUTLIER_RULES
 
 
 # ---------------------------------------------------------------------------
-# Utilidad compartida
+# Shared helper
 # ---------------------------------------------------------------------------
 
 
@@ -20,7 +20,7 @@ def _md_table(headers: list[str], rows: list[list[str]]) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Reporte de perfilado
+# Profiling report
 # ---------------------------------------------------------------------------
 
 
@@ -204,7 +204,7 @@ def build_profiling_report(summary: DatasetSummary, filename: str) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Reporte de tratamiento de nulos
+# Null treatment report
 # ---------------------------------------------------------------------------
 
 
@@ -302,7 +302,7 @@ def build_null_report(result: NullTreatmentResult) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Reporte de análisis de atípicos
+# Outlier analysis report
 # ---------------------------------------------------------------------------
 
 

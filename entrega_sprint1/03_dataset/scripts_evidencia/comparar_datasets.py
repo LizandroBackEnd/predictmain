@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 
 import pandas as pd
@@ -9,6 +10,28 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data"
 OUTPUT = ROOT / "evidencias" / "comparativa_datasets.md"
+
+NUMERIC_FEATURES = [
+    "Air temperature [K]",
+    "Process temperature [K]",
+    "Rotational speed [rpm]",
+    "Torque [Nm]",
+    "Tool wear [min]",
+]
+# Column changes that the pipeline documents in documentacion/limpieza_transformacion.md.
+INTENTIONAL_COLUMN_CHANGES = {
+    "Temp_diff": "Variable derivada `Process temperature - Air temperature` (HU-06, sección 3.5).",
+    "Type_L": "One-Hot Encoding de `Type` (HU-06, sección 3.5).",
+    "Type_M": "One-Hot Encoding de `Type` (HU-06, sección 3.5).",
+    "Type": "Reemplazada por `Type_L` y `Type_M`; `Type_H` es la categoría de referencia (HU-06).",
+    "UDI": "Identificador no predictivo excluido de las variables de entrada (HU-06).",
+    "Product ID": "Identificador no predictivo excluido de las variables de entrada (HU-06).",
+    "TWF": "Modo de falla excluido para evitar fuga de información (HU-06).",
+    "HDF": "Modo de falla excluido para evitar fuga de información (HU-06).",
+    "PWF": "Modo de falla excluido para evitar fuga de información (HU-06).",
+    "OSF": "Modo de falla excluido para evitar fuga de información (HU-06).",
+    "RNF": "Modo de falla excluido para evitar fuga de información (HU-06).",
+}
 
 
 def _md_table(headers: list[str], rows: list[list[object]]) -> str:
@@ -32,6 +55,36 @@ def _summary(name: str, path: Path) -> dict[str, object]:
     }
 
 
+def _same_values(left: pd.Series, right: pd.Series) -> bool:
+    return len(left) == len(right) and bool((left.values == right.values).all())
+
+
+def _changed_cells(before: pd.DataFrame, after: pd.DataFrame) -> int:
+    if before.shape != after.shape or list(before.columns) != list(after.columns):
+        return -1
+    return int((before.ne(after) & ~(before.isna() & after.isna())).sum().sum())
+
+
+def _column_changes(stages: list[tuple[str, pd.DataFrame]]) -> list[list[object]]:
+    rows: list[list[object]] = []
+    for (previous_name, previous), (name, current) in zip(stages, stages[1:]):
+        added = [column for column in current.columns if column not in previous.columns]
+        removed = [column for column in previous.columns if column not in current.columns]
+        for change, columns in (("Agregada", added), ("Eliminada", removed)):
+            for column in columns:
+                reason = INTENTIONAL_COLUMN_CHANGES.get(column)
+                rows.append([
+                    f"{previous_name} → {name}",
+                    change,
+                    f"`{column}`",
+                    "Sí" if reason else "No",
+                    reason or "Cambio no documentado",
+                ])
+        if not added and not removed:
+            rows.append([f"{previous_name} → {name}", "Sin cambios", "-", "Sí", "Esquema conservado"])
+    return rows
+
+
 def main() -> int:
     datasets = [
         ("Crudo", DATA / "raw" / "ai4i2020.csv"),
@@ -39,6 +92,13 @@ def main() -> int:
         ("Atípicos analizados (HU-05)", DATA / "processed" / "ai4i2020_outlier_analyzed.csv"),
         ("Transformado (HU-06)", DATA / "processed" / "ai4i2020_transformed.csv"),
     ]
+    missing = [path for _, path in datasets if not path.is_file() or path.stat().st_size == 0]
+    if missing:
+        for path in missing:
+            print(f"Entrada faltante o vacía: {path}", file=sys.stderr)
+        print("No se generó la comparativa.", file=sys.stderr)
+        return 1
+
     summaries = [_summary(name, path) for name, path in datasets]
 
     raw = pd.read_csv(datasets[0][1])
@@ -59,7 +119,7 @@ def main() -> int:
     ])
     checks.append([
         "Etiqueta objetivo idéntica tras limpieza",
-        bool((clean["Machine failure"].values == raw["Machine failure"].values).all()),
+        _same_values(clean["Machine failure"], raw["Machine failure"]),
         f"{int(clean['Machine failure'].sum()):,} fallas",
     ])
     checks.append([
@@ -74,7 +134,7 @@ def main() -> int:
     ])
     checks.append([
         "Etiqueta objetivo idéntica tras transformación",
-        bool((transformed["Machine failure"].values == raw["Machine failure"].values).all()),
+        _same_values(transformed["Machine failure"], raw["Machine failure"]),
         f"{int(transformed['Machine failure'].sum()):,} fallas",
     ])
     expected_features = [
@@ -97,6 +157,29 @@ def main() -> int:
         int(transformed.isna().sum().sum()) == 0,
         "0 nulos",
     ])
+    column_changes = _column_changes([(name, frame) for (name, _), frame in zip(datasets, [raw, clean, outlier, transformed])])
+    undocumented = [row for row in column_changes if row[3] == "No"]
+    checks.append([
+        "Todos los cambios de columnas son intencionales",
+        not undocumented,
+        f"{len(undocumented)} cambios no documentados",
+    ])
+    cells_clean = _changed_cells(raw, clean)
+    cells_outlier = _changed_cells(clean, outlier)
+    checks.append(["Valores sin modificar en limpieza", cells_clean == 0, f"{cells_clean} celdas modificadas"])
+    checks.append(["Valores sin modificar en análisis de atípicos", cells_outlier == 0, f"{cells_outlier} celdas modificadas"])
+
+    representative_rows: list[list[object]] = []
+    for feature in NUMERIC_FEATURES + ["Temp_diff"]:
+        source = raw[feature] if feature in raw.columns else raw["Process temperature [K]"] - raw["Air temperature [K]"]
+        representative_rows.append([
+            f"`{feature}`",
+            f"{source.mean():.3f}",
+            f"{source.std():.3f}",
+            f"{source.min():.3f} / {source.max():.3f}",
+            f"{transformed[feature].mean():.3f}",
+            f"{transformed[feature].std():.3f}",
+        ])
 
     type_counts = raw["Type"].value_counts().reindex(["L", "M", "H"]).fillna(0).astype(int)
     modes = {mode: int(raw[mode].sum()) for mode in ["TWF", "HDF", "PWF", "OSF", "RNF"]}
@@ -153,6 +236,29 @@ def main() -> int:
     ]
     for summary in summaries:
         lines.extend([f"### {summary['nombre']}", "", f"`{summary['columnas_lista']}`", ""])
+    lines.extend([
+        "## 7. Cambios de columnas entre etapas",
+        "",
+        _md_table(["Etapas", "Cambio", "Columna", "Intencional", "Justificación"], column_changes),
+        "",
+        "## 8. Valores representativos (crudo frente a transformado)",
+        "",
+        "El dataset transformado estandariza las variables numéricas; por eso su media es cercana a 0 y su desviación estándar a 1.",
+        "`Temp_diff` se calcula sobre el crudo para comparar la variable derivada.",
+        "",
+        _md_table(
+            ["Variable", "Media cruda", "Desv. cruda", "Mín. / Máx. crudo", "Media transformada", "Desv. transformada"],
+            representative_rows,
+        ),
+        "",
+        "## 9. Cambios intencionales por etapa",
+        "",
+        f"- Limpieza (HU-04): {cells_clean} celdas modificadas y 0 filas eliminadas; no había nulos que imputar.",
+        f"- Análisis de atípicos (HU-05): {cells_outlier} celdas modificadas; los atípicos se conservan y solo se documentan.",
+        "- Transformación (HU-06): estandarización de variables numéricas, `Temp_diff` derivada, One-Hot de `Type` y exclusión de identificadores y modos de falla.",
+        "- La etiqueta `Machine failure` se conserva sin cambios en todas las etapas.",
+        "",
+    ])
 
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT.write_text("\n".join(lines), encoding="utf-8")

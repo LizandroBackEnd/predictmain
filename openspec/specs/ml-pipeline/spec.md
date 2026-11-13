@@ -65,27 +65,28 @@ The domain layer MUST reside in `ml_service/src/domain/` and MUST contain zero d
 
 ### REQ-03: Decoupled Application Use Cases
 
-All pipeline orchestrations and business use cases MUST reside under `ml_service/src/application/`.
+All pipeline orchestrations and business use cases MUST reside under `ml_service/src/application/`, and the Sprint 1 delivery copy MUST expose the same use-case behavior and output contracts as the canonical pipeline.
 
 #### Scenario: Ingestion Use Case
 - **GIVEN** a raw CSV dataset file
-- **WHEN** `IngestionService.run_ingestion` is executed
+- **WHEN** `IngestionService.run_ingestion` is executed from the canonical or synchronized delivery pipeline
 - **THEN** it SHALL validate dataset structure (10,000 rows, 14 columns)
 - **AND** it SHALL compute the SHA-256 cryptographic digest via buffered byte-streaming (1MB chunks) without loading raw CSV entirely into memory
-- **AND** it SHALL create or verify `data/raw/manifest.json` idempotently.
+- **AND** it SHALL create or verify the applicable manifest idempotently.
 
 #### Scenario: Null Treatment Use Case
 - **GIVEN** raw or dirty telemetry data
-- **WHEN** `NullTreatmentService.run` is executed
+- **WHEN** `NullTreatmentService.run` is executed from the canonical or synchronized delivery pipeline
 - **THEN** it SHALL drop rows with missing target or failure mode labels using boolean mask indexing
 - **AND** it SHALL impute continuous sensor features using vectorized median replacement
 - **AND** it SHALL impute categorical `Type` using mode (most frequent category).
 
 #### Scenario: Sklearn Transformation Pipeline
 - **GIVEN** cleaned feature data
-- **WHEN** `PipelineService.build_and_fit` is executed
+- **WHEN** `PipelineService.build_and_fit` is executed from the canonical or synchronized delivery pipeline
 - **THEN** it SHALL apply `DerivedFeatureAdder` to calculate `Temp_diff = Process temperature [K] - Air temperature [K]`
-- **AND** all estimator signatures (e.g. `fit(X, y=None)`) SHALL be strictly typed with PEP 484 annotations.
+- **AND** all estimator signatures (e.g. `fit(X, y=None)`) SHALL be strictly typed with PEP 484 annotations
+- **AND** the output schema and serialized pipeline behavior MUST match the canonical pipeline.
 
 ---
 
@@ -116,6 +117,24 @@ The CLI interface MUST be decoupled from business logic and reside under `ml_ser
 - **THEN** the CLI router SHALL delegate directly to application services
 - **AND** it SHALL return exit code 0 on success and exit code 1 with clean stderr logging on handled exceptions
 - **AND** no business logic or dataset transformation code SHALL live in CLI command files.
+
+---
+
+### REQ-06: Delivery Pipeline Synchronization
+
+The Sprint 1 delivery copy of the Python ML pipeline MUST match the canonical pipeline source files and MUST include the requirements and loadable serialized pipeline artifact needed to reproduce the documented processing stages.
+
+#### Scenario: Pipeline copy is synchronized
+- **GIVEN** canonical pipeline source files and delivery copies exist
+- **WHEN** synchronization validation runs
+- **THEN** every expected source file MUST match by checksum or documented content comparison
+- **AND** the delivery artifact MUST be loadable in the documented Python environment.
+
+#### Scenario: Pipeline copy is stale
+- **GIVEN** a delivery source file or serialized artifact differs from the canonical version
+- **WHEN** synchronization validation runs
+- **THEN** it MUST report the stale path
+- **AND** it MUST fail until the delivery copy is synchronized.
 
 ---
 

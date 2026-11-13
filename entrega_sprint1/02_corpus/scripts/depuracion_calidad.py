@@ -60,6 +60,8 @@ def _es_encabezado_seccion(linea: str) -> bool:
 def main() -> int:
     if not ENTRADA.is_file():
         raise FileNotFoundError(f"No se encontró el archivo de entrada: {ENTRADA}")
+    if ENTRADA.stat().st_size == 0:
+        raise ValueError(f"El archivo de entrada está vacío: {ENTRADA}")
 
     texto = ENTRADA.read_text(encoding="utf-8")
     caracteres_entrada = len(texto)
@@ -132,6 +134,8 @@ def main() -> int:
     ]
     texto_procesado = "\n\n".join(parrafos_ajustados).strip() + "\n"
     caracteres_salida = len(texto_procesado)
+    if not parrafos_unicos or caracteres_salida == 1:
+        raise ValueError("La depuración produjo un corpus vacío; se cancela la salida.")
     SALIDA.parent.mkdir(parents=True, exist_ok=True)
     SALIDA.write_text(texto_procesado, encoding="utf-8")
 

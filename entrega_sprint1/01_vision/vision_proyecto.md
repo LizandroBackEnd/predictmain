@@ -124,3 +124,17 @@ El agente no ejecuta código Python directamente. Consume resultados del modelo 
 6. El system prompt define reglas, límites y formato de respuesta.
 7. El corpus se procesa y valida con evidencia reproducible.
 8. Los pendientes están identificados y justificados.
+
+## 10. Trazabilidad de la entrega
+
+La relación completa entre los requisitos solicitados, los scripts, los datos
+generados y sus evidencias se encuentra en
+`01_vision/matriz_trazabilidad_requisitos.md`. La línea base de hashes, tamaños,
+esquemas y fuentes inmutables se encuentra en
+`01_vision/evidencias/inventario_fuentes_canonicas.md`.
+
+La entrega utiliza como fuentes canónicas el contenido de `data/` y
+`ml_service/`. Las copias dentro de `entrega_sprint1/` son artefactos de
+distribución y deben conservar la misma información verificable. La conversión
+de esta documentación a PDF se realizará posteriormente como actividad de
+entrega, fuera del alcance de este cambio.

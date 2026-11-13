@@ -38,11 +38,11 @@ class OutlierRule:
 
     column: str
     detection_method: DetectionMethod
-    iqr_factor: float          # multiplicador de la cerca IQR (normalmente 1.5)
-    percentile_low: float      # límite percentil inferior (p. ej. 0.01)
-    percentile_high: float     # límite percentil superior (p. ej. 0.99)
-    uci_physical_min: float    # mínimo absoluto según la especificación UCI
-    uci_physical_max: float    # máximo absoluto según la especificación UCI
+    iqr_factor: float          # multiplier for IQR fence (typically 1.5)
+    percentile_low: float      # lower percentile bound (e.g. 0.01)
+    percentile_high: float     # upper percentile bound (e.g. 0.99)
+    uci_physical_min: float    # absolute minimum from UCI spec
+    uci_physical_max: float    # absolute maximum from UCI spec
     decision: OutlierDecision
     outlier_type: str          # "measurement_error" | "valid_extreme" | "failure_signal"
     rationale: str

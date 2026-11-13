@@ -24,35 +24,35 @@ def build_parser() -> argparse.ArgumentParser:
     )
     subparsers = parser.add_subparsers(dest="command", help="Comando a ejecutar")
 
-    # Comando de ingesta
+    # Ingestion command
     ingest = subparsers.add_parser("ingest", help="Ejecutar ingesta y generar manifest.json (HU-01)")
     ingest.add_argument("--csv", type=Path, default=paths.raw_csv_path, help="Ruta al archivo CSV crudo")
     ingest.add_argument("--manifest", type=Path, default=paths.manifest_path, help="Ruta al manifest JSON de salida")
 
-    # Comando de perfilado
+    # Profiling command
     profile = subparsers.add_parser("profile", help="Ejecutar perfilado estadístico y generar reporte (HU-02)")
     profile.add_argument("--csv", type=Path, default=paths.raw_csv_path, help="Ruta al archivo CSV crudo a perfilar")
     profile.add_argument("--report", type=Path, default=paths.get_profile_report_path(), help="Ruta al reporte Markdown de salida")
 
-    # Comando de tratamiento de nulos
+    # Null treatment command
     treat = subparsers.add_parser("treat", help="Tratar valores nulos y generar null_report.md (HU-04)")
     treat.add_argument("--csv", type=Path, default=paths.raw_csv_path)
     treat.add_argument("--output", type=Path, default=paths.clean_csv_path)
     treat.add_argument("--report", type=Path, default=paths.null_report_path)
 
-    # Comando de análisis de atípicos
+    # Outlier analysis command
     outliers = subparsers.add_parser("outliers", help="Analizar outliers y generar outlier_report.md (HU-05)")
     outliers.add_argument("--csv", type=Path, default=paths.clean_csv_path)
     outliers.add_argument("--output", type=Path, default=paths.outlier_csv_path)
     outliers.add_argument("--report", type=Path, default=paths.outlier_report_path)
 
-    # Comando del pipeline de transformación
+    # Transformation pipeline command
     transform = subparsers.add_parser("transform", help="Ajustar pipeline y generar features (HU-06)")
     transform.add_argument("--csv", type=Path, default=paths.outlier_csv_path)
     transform.add_argument("--output", type=Path, default=paths.transformed_csv_path)
     transform.add_argument("--pipeline", type=Path, default=paths.pipeline_path)
 
-    # Comando completo
+    # All command
     all_cmd = subparsers.add_parser("all", help="Ejecutar ingesta, perfilado y tratamiento de extremo a extremo")
     all_cmd.add_argument("--csv", type=Path, default=paths.raw_csv_path, help="Ruta al archivo CSV crudo")
 

@@ -8,7 +8,7 @@ from dataclasses import asdict, dataclass, field
 
 
 # ---------------------------------------------------------------------------
-# Dominio de ingesta
+# Ingestion domain
 # ---------------------------------------------------------------------------
 
 
@@ -61,7 +61,7 @@ class IngestionResult:
 
 
 # ---------------------------------------------------------------------------
-# Dominio de perfilado
+# Profiling domain
 # ---------------------------------------------------------------------------
 
 
@@ -87,9 +87,9 @@ class QualityReport:
     """Data quality findings: duplicates, nulls, and physical range violations."""
 
     duplicate_rows: int
-    null_counts: dict[str, int]        # {nombre_columna: cantidad_nulos}
-    out_of_range: dict[str, list[int]] # {nombre_columna: [índices de filas]}
-    invalid_type_values: dict[str, int] # {nombre_columna: cantidad de valores inesperados}
+    null_counts: dict[str, int]        # {column_name: null_count}
+    out_of_range: dict[str, list[int]] # {column_name: [row indices]}
+    invalid_type_values: dict[str, int] # {column_name: count of unexpected values}
     total_issues: int
 
 
@@ -106,7 +106,7 @@ class DatasetSummary:
 
 
 # ---------------------------------------------------------------------------
-# Dominio de tratamiento de nulos
+# Null treatment domain
 # ---------------------------------------------------------------------------
 
 
@@ -136,11 +136,11 @@ class NullTreatmentResult:
     total_nulls_before: int
     total_values_imputed: int
     column_stats: list[ColumnNullStat]
-    rows_with_nulls_before: int  # registros que tenían ≥1 nulo
+    rows_with_nulls_before: int  # records that had ≥1 null
 
 
 # ---------------------------------------------------------------------------
-# Dominio de análisis de atípicos
+# Outlier analysis domain
 # ---------------------------------------------------------------------------
 
 
@@ -153,7 +153,7 @@ class ColumnOutlierStat:
     outlier_type: str
     detection_method: str
 
-    # Estadísticas IQR
+    # IQR stats
     q1: float
     q3: float
     iqr: float
@@ -161,20 +161,20 @@ class ColumnOutlierStat:
     iqr_fence_high: float
     iqr_outliers_count: int
 
-    # Estadísticas de percentiles
+    # Percentile stats
     p1: float
     p99: float
     percentile_outliers_count: int
 
-    # Rango físico UCI
+    # UCI physical range
     uci_physical_min: float
     uci_physical_max: float
     outside_physical_range: int
 
-    # Conteos posteriores a la decisión
-    records_detected: int   # unión de atípicos IQR + percentiles
-    records_modified: int   # cuántos fueron recortados (CAP)
-    records_excluded: int   # cuántas filas fueron eliminadas
+    # Post-decision counts
+    records_detected: int   # union of IQR + percentile outliers
+    records_modified: int   # how many were CAP-ped
+    records_excluded: int   # how many rows were dropped
 
 
 @dataclass
@@ -192,7 +192,7 @@ class OutlierAnalysisResult:
 
 
 # ---------------------------------------------------------------------------
-# Dominio de transformación
+# Transformation domain
 # ---------------------------------------------------------------------------
 
 
@@ -202,4 +202,4 @@ class TransformationResult:
 
     rows: int
     feature_columns: list[str]
-    pipeline_path: str | None   # None si aún no se ha guardado
+    pipeline_path: str | None   # None if not saved yet

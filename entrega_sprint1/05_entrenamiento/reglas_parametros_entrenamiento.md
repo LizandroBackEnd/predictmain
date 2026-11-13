@@ -52,6 +52,8 @@ Este documento define las reglas y los parámetros para dos componentes:
 | Abstención | "No tengo evidencia suficiente" | Evita alucinaciones. |
 | Evaluación | Fidelidad, trazabilidad, claridad, seguridad y utilidad | Criterios del agente. |
 
+Los valores iniciales dentro de cada rango están fijados en `config_entrenamiento.json`: fragmentos de 800 caracteres, solapamiento de 120, 5 fragmentos recuperados, temperatura 0.2 y 1,000 tokens máximos.
+
 ## 5. Decisión de estrategia
 
 | Estrategia | Evaluación | Decisión |
