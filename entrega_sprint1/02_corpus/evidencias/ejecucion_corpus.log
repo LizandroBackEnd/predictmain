@@ -1,10 +1,12 @@
-﻿PredictMain - Procesamiento del corpus - 2026-11-12 16:40:06
-P├íginas extra├¡das: 26
-Caracteres extra├¡dos: 54,903
+PredictMain - Procesamiento del corpus - 2026-11-13 00:14:47 UTC
+Entrada: entrega_sprint1/02_corpus/corpus_original/PredictMain_Corpus_Contenido.pdf
+SHA-256 de entrada: 78190c534b822d0245a4e98ff51fc6a77af4d52b7c1c295f105b9b0575b04efe
+Páginas extraídas: 26
+Caracteres extraídos: 54,903
 Caracteres limpios: 40,285
-Reporte: C:\Users\user\Documents\SEPTIMO\edt_PredictMain\predictmain\entrega_sprint1\02_corpus\evidencias\reporte_limpieza_corpus.md
+Reporte: entrega_sprint1/02_corpus/evidencias/reporte_limpieza_corpus.md
 Caracteres procesados: 40,172
-P├írrafos: 469
-Reporte: C:\Users\user\Documents\SEPTIMO\edt_PredictMain\predictmain\entrega_sprint1\02_corpus\evidencias\reporte_depuracion_corpus.md
-Validaci├│n: C:\Users\user\Documents\SEPTIMO\edt_PredictMain\predictmain\entrega_sprint1\02_corpus\evidencias\validacion_calidad_corpus.md
+Párrafos: 469
+Reporte: entrega_sprint1/02_corpus/evidencias/reporte_depuracion_corpus.md
+Validación: entrega_sprint1/02_corpus/evidencias/validacion_calidad_corpus.md
 Todas las verificaciones pasaron (11).

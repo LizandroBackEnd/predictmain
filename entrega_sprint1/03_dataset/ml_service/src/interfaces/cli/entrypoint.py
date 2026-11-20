@@ -55,6 +55,7 @@ def build_parser() -> argparse.ArgumentParser:
     transform.add_argument("--pipeline", type=Path, default=paths.pipeline_path)
     transform.add_argument("--report", type=Path, default=paths.transformation_report_path)
 
+<<<<<<< HEAD
     apply = subparsers.add_parser("apply", help="Aplicar pipeline guardado a datos nuevos (HU-06)")
     apply.add_argument("--csv", type=Path, required=True)
     apply.add_argument("--output", type=Path, default=paths.applied_csv_path)
@@ -65,6 +66,8 @@ def build_parser() -> argparse.ArgumentParser:
     validate.add_argument("--matrix", type=Path, default=paths.feature_matrix_csv_path)
     validate.add_argument("--report", type=Path, default=paths.matrix_validation_report_path)
 
+=======
+>>>>>>> b423e3e501c4b85e37df6a0819df1e5601bff01c
     # All command
     all_cmd = subparsers.add_parser("all", help="Ejecutar ingesta, perfilado y tratamiento de extremo a extremo")
     all_cmd.add_argument("--csv", type=Path, default=paths.raw_csv_path, help="Ruta al archivo CSV crudo")

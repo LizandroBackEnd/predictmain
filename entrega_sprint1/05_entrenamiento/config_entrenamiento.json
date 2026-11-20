@@ -79,7 +79,7 @@
     "fine_tuning": false,
     "corpus_path": "02_corpus/salidas/corpus_procesado.txt",
     "source_pdf_sha256": "78190C534B822D0245A4E98FF51FC6A77AF4D52B7C1C295F105B9B0575B04EFE",
-    "corpus_processed_sha256": "9CD37B95A92D3DC482D4F0257FD6DDBE573116005BC8491C6C64D9C18FA8AFDE",
+    "corpus_processed_sha256": "33C0B54C48759B9E051BBD9159733C7563C27C865426A2B9D6125EB20C711683",
     "chunk_size": 800,
     "chunk_overlap": 120,
     "retrieval_top_k": 5,

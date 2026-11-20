@@ -35,16 +35,16 @@ class OutlierAnalysisService:
         """
         arr: np.ndarray = series.to_numpy(dtype=float)
 
-        # Cerca IQR — Q1 = percentil 25, Q3 = percentil 75
+        # IQR fence — Q1 = 25th percentile, Q3 = 75th percentile
         q1 = float(np.percentile(arr, 25, method="linear"))
         q3 = float(np.percentile(arr, 75, method="linear"))
         iqr = q3 - q1
         fence_low = q1 - rule.iqr_factor * iqr
         fence_high = q3 + rule.iqr_factor * iqr
 
-        # Límites por percentiles — P1 y P99 (valores en [0, 100])
-        p_low_q  = rule.percentile_low  * 100   # p. ej. 0.01 → 1
-        p_high_q = rule.percentile_high * 100   # p. ej. 0.99 → 99
+        # Percentile bounds — P1 and P99 (values in [0, 100])
+        p_low_q  = rule.percentile_low  * 100   # e.g. 0.01 → 1
+        p_high_q = rule.percentile_high * 100   # e.g. 0.99 → 99
         p1  = float(np.percentile(arr, p_low_q,  method="linear"))
         p99 = float(np.percentile(arr, p_high_q, method="linear"))
 
@@ -63,16 +63,16 @@ class OutlierAnalysisService:
         result_series = series.copy()
 
         if rule.decision == "CAP":
-            # Winsorizar: recortar a las cercas IQR
+            # Winsorize: clip to IQR fences
             result_series = result_series.clip(lower=fence_low, upper=fence_high)
             modified = detected_count
 
         elif rule.decision == "EXCLUDE":
-            # Marcar filas para exclusión (se devuelven como NaN para que el llamador las elimine)
+            # Mark rows for exclusion (returned as NaN so caller can drop)
             result_series[mask_detected] = np.nan
             excluded = detected_count
 
-        # KEEP: la serie no cambia
+        # KEEP: series is unchanged
         stat = ColumnOutlierStat(
             column=rule.column,
             decision=rule.decision,
@@ -123,7 +123,7 @@ class OutlierAnalysisService:
             df[rule.column] = modified_series
             column_stats.append(stat)
 
-        # Eliminar filas donde la decisión EXCLUDE dejó NaN
+        # Drop rows where EXCLUDE decision set NaN
         exclude_cols = [
             rule.column for rule in OUTLIER_RULES
             if rule.decision == "EXCLUDE" and rule.column in df.columns

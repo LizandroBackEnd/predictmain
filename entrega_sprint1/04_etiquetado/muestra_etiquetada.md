@@ -2,6 +2,10 @@
 
 Generada automáticamente por `scripts/generar_muestra_etiquetada.py` con `random_state=42`.
 
+- Fuente: `03_dataset/data/raw/ai4i2020.csv` (10,000 registros).
+- Regla de selección: 5 registros aleatorios por cada combinación de `Machine failure` (0, 1) y `Type` (L, M, H).
+- Trazabilidad: cada registro conserva su `UDI` y sus columnas originales; `scripts/validar_etiquetas.py` comprueba que coincida con el dataset completo.
+
 ## 1. Archivos generados
 
 | Archivo | Contenido | Registros |
@@ -88,8 +92,11 @@ Generada automáticamente por `scripts/generar_muestra_etiquetada.py` con `rando
 
 ## 6. Reproducibilidad
 
-```powershell
-python scripts/generar_muestra_etiquetada.py
+Desde la raíz del repositorio:
+
+```bash
+python entrega_sprint1/04_etiquetado/scripts/generar_muestra_etiquetada.py
+python entrega_sprint1/04_etiquetado/scripts/validar_etiquetas.py
 ```
 
 La muestra no se usa para entrenar; su propósito es facilitar la revisión y validación de etiquetas.

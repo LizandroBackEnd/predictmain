@@ -12,6 +12,7 @@ from collections import Counter
 from pathlib import Path
 
 from pypdf import PdfReader
+from pypdf.errors import PdfReadError
 
 ROOT = Path(__file__).resolve().parents[1]
 PDF = ROOT / "corpus_original" / "PredictMain_Corpus_Contenido.pdf"
@@ -27,6 +28,7 @@ TRAILING_HYPHEN = re.compile(r"[a-záéíóúñ]-$")
 
 
 def extraer_pdf(pdf_path: Path) -> tuple[dict[str, str], list[dict[str, object]]]:
+    """Extract metadata and text while preserving the original page order."""
     reader = PdfReader(str(pdf_path))
     metadata = {str(key): str(value) for key, value in (reader.metadata or {}).items()}
     pages = []
@@ -126,11 +128,18 @@ def limpiar_paginas(pages: list[dict[str, object]], repetidas: set[str]) -> tupl
 def main() -> int:
     if not PDF.is_file():
         raise FileNotFoundError(f"No se encontró el corpus: {PDF}")
+    if PDF.stat().st_size == 0:
+        raise ValueError(f"El corpus original está vacío: {PDF}")
 
     SALIDAS.mkdir(parents=True, exist_ok=True)
     EVIDENCIAS.mkdir(parents=True, exist_ok=True)
 
-    metadata, pages = extraer_pdf(PDF)
+    try:
+        metadata, pages = extraer_pdf(PDF)
+    except PdfReadError as error:
+        raise ValueError(f"No se pudo leer el corpus PDF {PDF}: {error}") from error
+    if not pages or any(not str(page["texto"]).strip() for page in pages):
+        raise ValueError("La extracción produjo páginas vacías; se cancela la salida.")
     repetidas = detectar_lineas_repetidas(pages)
     texto_limpio, metricas = limpiar_paginas(pages, repetidas)
     texto_extraido = "\n\n".join(
@@ -143,6 +152,8 @@ def main() -> int:
         encoding="utf-8",
     )
     (SALIDAS / "corpus_limpio.txt").write_text(texto_limpio, encoding="utf-8")
+    if not texto_limpio.strip():
+        raise ValueError("La limpieza produjo un corpus vacío; se cancela la evidencia.")
 
     caracteres_extraidos = len(texto_extraido)
     caracteres_limpios = len(texto_limpio)

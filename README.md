@@ -105,11 +105,15 @@ predictmain/
 │
 ├── ml_service/                     # Microservicio de ML e Inferencia
 │   ├── .venv/                      # Entorno virtual aislado de Python
-│   ├── requirements.txt            # Dependencias: FastAPI, Scikit-learn, Pandas, Uvicorn
-│   ├── main.py                     # Servidor FastAPI exponiendo POST /predict
-│   ├── artifacts/                  # Modelos y preprocesadores entrenados (.pkl / .joblib)
+│   ├── requirements.txt            # Dependencias del pipeline de datos y ML
+│   ├── artifacts/                  # Pipelines serializados (.joblib)
 │   ├── notebooks/                  # EDA y experimentos CRISP-DM
-│   └── src/                        # Ingestión, preprocesamiento y entrenamiento
+│   ├── tests/                      # Pruebas unitarias del pipeline
+│   └── src/                        # Clean Architecture del pipeline
+│       ├── domain/                 # Entidades, reglas y modelos de dominio
+│       ├── application/            # Casos de uso de ingesta y transformación
+│       ├── infrastructure/         # Persistencia, reportes y rutas del workspace
+│       └── interfaces/cli/         # Comandos y entrypoint de la CLI
 │
 ├── src/                            # Núcleo de la Plataforma Web (Next.js 16)
 │   ├── app/                        # Capa de Entrega (App Router)
@@ -139,7 +143,9 @@ predictmain/
     ├── roles.md                    # Stakeholders y matriz RACI
     ├── product-capabilities.md     # Catálogo de funcionalidades
     ├── modules.md                  # Detalle de módulos y arquitectura
-    └── 01-project-management/ ...  # Backlog, Historias de Usuario (HU-01 a HU-07)
+    ├── 03-analysis/                # Comprensión del dataset y criterios analíticos
+    ├── 05-development/             # Guía del pipeline de datos
+    └── 01-project-management/ ...  # Backlog e Historias de Usuario
 ```
 
 ---
@@ -207,18 +213,15 @@ source .venv/bin/activate
 pip install -r requirements.txt
 
 # --- Ejecución del Pipeline de Datos (Clean Architecture) ---
-# Equivalencia con scripts de versiones preliminares:
-# • create_manifest.py -> python -m src.cli ingest   (HU-01: Ingesta y validación SHA-256)
-# • profile_data.py    -> python -m src.cli profile  (HU-02: Perfilado estadístico en docs/)
-python -m src.cli ingest     # Genera y verifica data/raw/manifest.json (idempotente)
-python -m src.cli profile    # Genera docs/03-analysis/data-profile.md
-python -m src.cli all        # Corre ingesta + perfilado secuencialmente en un solo comando
+python -m src.cli ingest     # HU-01: valida el CSV y genera/verifica manifest.json
+python -m src.cli profile    # HU-02: genera data/profiling/data-profile-YYYY-MM-DD.md
+python -m src.cli treat      # HU-04: trata nulos y genera reports/null_report.md
+python -m src.cli outliers   # HU-05: analiza outliers y genera reports/outlier_report.md
+python -m src.cli transform  # HU-06: transforma features y guarda artifacts/pipeline.joblib
+python -m src.cli all        # Ejecuta todas las etapas en orden
 
-# Correr suite de pruebas unitarias automatizadas (7 tests)
+# Correr suite de pruebas unitarias automatizadas
 python -m unittest discover -s tests
-
-# Iniciar servidor de inferencia FastAPI (cuando esté configurado)
-uvicorn main:app --reload --port 8000
 ```
 
 > **Tip:** También puedes ejecutar el pipeline directamente desde la raíz del proyecto sin cambiar de carpeta:
@@ -235,15 +238,15 @@ python -m venv .venv
 pip install -r requirements.txt
 
 # --- Ejecución del Pipeline de Datos (Clean Architecture) ---
-python -m src.cli ingest     # HU-01: Ingesta y verificación de data/raw/manifest.json
-python -m src.cli profile    # HU-02: Perfilado y generación de docs/03-analysis/data-profile.md
-python -m src.cli all        # Corre ingesta + perfilado en un solo comando
+python -m src.cli ingest     # HU-01: valida el dataset y verifica data/raw/manifest.json
+python -m src.cli profile    # HU-02: genera data/profiling/data-profile-YYYY-MM-DD.md
+python -m src.cli treat      # HU-04: trata valores nulos
+python -m src.cli outliers   # HU-05: analiza valores atípicos
+python -m src.cli transform  # HU-06: genera features y pipeline.joblib
+python -m src.cli all        # Ejecuta todas las etapas en orden
 
-# Correr suite de pruebas unitarias automatizadas (7 tests)
+# Correr suite de pruebas unitarias automatizadas
 python -m unittest discover -s tests
-
-# Iniciar servidor de inferencia FastAPI
-uvicorn main:app --reload --port 8000
 ```
 
 > **Tip (Windows):** Ejecución directa desde la raíz:
@@ -272,8 +275,8 @@ bun dev
 | Servicio | URL / Puerto | Descripción |
 | :--- | :--- | :--- |
 | **Web Application** | `http://localhost:3000` | Dashboard principal de PredictMain (Next.js 16) |
-| **ML Inference Service** | `http://localhost:8000` | Microservicio de FastAPI |
-| **API Interactive Docs** | `http://localhost:8000/docs` | Documentación interactiva Swagger / OpenAPI de FastAPI |
+| **ML Inference Service** | — | Pendiente de implementación del servidor FastAPI |
+| **API Interactive Docs** | — | Disponible cuando se incorpore el servidor FastAPI |
 | **PostgreSQL + pgvector** | `localhost:5432` | Base de datos relacional y vectorial |
 
 ---
@@ -318,6 +321,7 @@ Para consultar el análisis a profundidad del dominio y la especificación forma
 - 📋 [Acta de Proyecto y Objetivos](./docs/01-project-management/project-charter.md)
 - 📊 [Historias de Usuario (CRISP-DM)](./docs/02-requirements/user-stories.md)
 - 🔬 [Comprensión del Dataset AI4I 2020](./docs/03-analysis/data-understanding.md)
-- 📈 [Reporte de Perfilado de Telemetría (HU-02)](./docs/03-analysis/data-profile.md)
-- 🔄 [Pipeline de Ingesta, Perfilado y CLI (HU-01 y HU-02)](./docs/05-development/data-pipeline.md)
-
+- 📈 [Reportes de Perfilado de Telemetría (HU-02)](./data/profiling/)
+- 🧹 [Reporte de Tratamiento de Nulos (HU-04)](./reports/null_report.md)
+- 📊 [Reporte de Análisis de Outliers (HU-05)](./reports/outlier_report.md)
+- 🔄 [Pipeline de Datos, Clean Architecture y CLI](./docs/05-development/data-pipeline.md)

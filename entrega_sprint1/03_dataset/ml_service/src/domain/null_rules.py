@@ -55,7 +55,7 @@ class ColumnRule:
     justification: str
 
 
-# Ordenado para coincidir con el orden de columnas del CSV original
+# Ordered to match the original CSV column order
 COLUMN_RULES: list[ColumnRule] = [
     ColumnRule(
         column="UDI",
@@ -167,6 +167,6 @@ COLUMN_RULES: list[ColumnRule] = [
     ),
 ]
 
-# Búsqueda rápida por nombre de columna
+# Fast lookup by column name
 RULES_BY_COLUMN: dict[str, ColumnRule] = {r.column: r for r in COLUMN_RULES}
 

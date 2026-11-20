@@ -44,7 +44,7 @@ from dataclasses import dataclass
 
 
 # ---------------------------------------------------------------------------
-# Constantes de rol de columnas
+# Column role constants
 # ---------------------------------------------------------------------------
 
 TARGET_COLUMN = "Machine failure"
@@ -70,7 +70,7 @@ CONTINUOUS_COLUMNS: list[str] = [
     "Tool wear [min]",
 ]
 
-# Especificación de variables derivadas
+# Derived feature specification
 DERIVED_FEATURE_NAME = "Temp_diff"
 DERIVED_FEATURE_FORMULA = "Process temperature [K] - Air temperature [K]"
 
@@ -97,13 +97,13 @@ DERIVED_FEATURES: list[DerivedFeature] = [
     ),
 ]
 
-# Columnas finales de variables tras todas las transformaciones
-# (usadas para validar la salida del pipeline)
-# One-Hot Encoding con drop='first' ordena categorías alfabéticamente [H, L, M]
-# y elimina 'H' (primera). Columnas resultantes: Type_L, Type_M
+# Final feature columns after all transformations
+# (used for validation after pipeline output)
+# OHE with drop='first' sorts categories alphabetically [H, L, M]
+# and drops 'H' (first). Resulting columns: Type_L, Type_M
 EXPECTED_FEATURE_COLUMNS: list[str] = (
     CONTINUOUS_COLUMNS
     + [DERIVED_FEATURE_NAME]
-    + ["Type_L", "Type_M"]          # Resultado de OHE con drop='first' (H es la referencia)
+    + ["Type_L", "Type_M"]          # OHE result with drop='first' (H is reference)
 )
 

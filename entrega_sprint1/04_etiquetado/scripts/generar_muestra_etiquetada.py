@@ -1,7 +1,13 @@
-"""Genera el dataset etiquetado completo y una muestra reproducible."""
+"""Genera el dataset etiquetado completo y una muestra reproducible.
+
+La muestra toma `SAMPLE_PER_GROUP` registros de cada combinación de
+`Machine failure` y `Type` con la semilla fija `SAMPLE_SEED`, por lo que cada
+ejecución sobre el mismo CSV produce exactamente la misma muestra.
+"""
 
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 
 import pandas as pd
@@ -21,6 +27,8 @@ SENSOR_COLUMNS = [
     "Torque [Nm]",
     "Tool wear [min]",
 ]
+SAMPLE_SEED = 42
+SAMPLE_PER_GROUP = 5
 
 
 def _modes_label(row: pd.Series) -> str:
@@ -36,7 +44,11 @@ def _md_table(headers: list[str], rows: list[list[object]]) -> str:
 
 
 def main() -> int:
+    if not RAW.is_file():
+        print(f"No se encontró el dataset original: {RAW}", file=sys.stderr)
+        return 1
     df = pd.read_csv(RAW)
+    # Labels are derived only from the original columns; no record is relabeled.
     df["etiqueta"] = df["Machine failure"].map({0: "Sin falla", 1: "Falla"})
     df["modos_activos"] = df.apply(_modes_label, axis=1)
 
@@ -52,10 +64,11 @@ def main() -> int:
     ]
     full = df[ordered_columns].sort_values("UDI").reset_index(drop=True)
 
+    # Stratified by class and product type so the review sample balances failures (15) and non-failures (15).
     samples = []
-    for (target, product_type), group in df.groupby(["Machine failure", "Type"]):
-        take = min(5, len(group))
-        samples.append(group.sample(n=take, random_state=42))
+    for _, group in df.groupby(["Machine failure", "Type"]):
+        take = min(SAMPLE_PER_GROUP, len(group))
+        samples.append(group.sample(n=take, random_state=SAMPLE_SEED))
     sample = pd.concat(samples).sort_values(["Machine failure", "Type", "UDI"]).reset_index(drop=True)
     sample = sample[ordered_columns]
 
@@ -71,7 +84,11 @@ def main() -> int:
     lines = [
         "# Muestra etiquetada del dataset AI4I 2020",
         "",
-        "Generada automáticamente por `scripts/generar_muestra_etiquetada.py` con `random_state=42`.",
+        f"Generada automáticamente por `scripts/generar_muestra_etiquetada.py` con `random_state={SAMPLE_SEED}`.",
+        "",
+        f"- Fuente: `03_dataset/data/raw/ai4i2020.csv` ({len(df):,} registros).",
+        f"- Regla de selección: {SAMPLE_PER_GROUP} registros aleatorios por cada combinación de `Machine failure` (0, 1) y `Type` (L, M, H).",
+        "- Trazabilidad: cada registro conserva su `UDI` y sus columnas originales; `scripts/validar_etiquetas.py` comprueba que coincida con el dataset completo.",
         "",
         "## 1. Archivos generados",
         "",
@@ -140,8 +157,11 @@ def main() -> int:
         "",
         "## 6. Reproducibilidad",
         "",
-        "```powershell",
-        "python scripts/generar_muestra_etiquetada.py",
+        "Desde la raíz del repositorio:",
+        "",
+        "```bash",
+        "python entrega_sprint1/04_etiquetado/scripts/generar_muestra_etiquetada.py",
+        "python entrega_sprint1/04_etiquetado/scripts/validar_etiquetas.py",
         "```",
         "",
         "La muestra no se usa para entrenar; su propósito es facilitar la revisión y validación de etiquetas.",
