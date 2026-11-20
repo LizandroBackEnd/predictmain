@@ -135,7 +135,8 @@ OUTLIER_RULES: list[OutlierRule] = [
         outlier_type="valid_extreme",
         rationale=(
             "IQR fence is [-110.5, 325.5 min] — wider than the physical range, "
-            "so IQR detects 0 outliers. P1/P99 flags 99 high-wear values (>230 min). "
+            "so IQR detects 0 outliers. P1/P99 flags 99 high-wear values "
+            "(P99 = 222.00 min). "
             "High tool wear is physically expected before a TWF (tool wear failure) "
             "event and is the primary feature for that failure mode. All values are "
             "within UCI physical range [0–253 min]. "

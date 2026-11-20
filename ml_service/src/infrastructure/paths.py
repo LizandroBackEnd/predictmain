@@ -50,6 +50,14 @@ class ProjectPaths:
         # HU-06 paths
         self.pipeline_path = self.artifacts_dir / "pipeline.joblib"
         self.transformed_csv_path = self.processed_data_dir / "ai4i2020_transformed.csv"
+        self.transformation_report_path = self.reports_dir / "transformation_report.md"
+        self.applied_csv_path = self.processed_data_dir / "ai4i2020_applied.csv"
+        self.feature_matrix_csv_path = (
+            self.processed_data_dir / "ai4i2020_features.csv"
+        )
+        self.matrix_validation_report_path = (
+            self.reports_dir / "matrix_validation_report.md"
+        )
 
     def get_profile_report_path(self) -> Path:
         """Return the date-stamped profile report path for today's execution."""

@@ -8,11 +8,13 @@ from pathlib import Path
 
 from src.infrastructure.paths import paths
 from src.interfaces.cli.commands import (
+    run_apply_cmd,
     run_ingestion_cmd,
     run_null_treatment_cmd,
     run_outlier_analysis_cmd,
     run_profiling_cmd,
     run_transform_cmd,
+    run_validate_cmd,
 )
 
 
@@ -24,35 +26,46 @@ def build_parser() -> argparse.ArgumentParser:
     )
     subparsers = parser.add_subparsers(dest="command", help="Comando a ejecutar")
 
-    # Comando de ingesta
+    # Ingestion command
     ingest = subparsers.add_parser("ingest", help="Ejecutar ingesta y generar manifest.json (HU-01)")
     ingest.add_argument("--csv", type=Path, default=paths.raw_csv_path, help="Ruta al archivo CSV crudo")
     ingest.add_argument("--manifest", type=Path, default=paths.manifest_path, help="Ruta al manifest JSON de salida")
 
-    # Comando de perfilado
+    # Profiling command
     profile = subparsers.add_parser("profile", help="Ejecutar perfilado estadístico y generar reporte (HU-02)")
     profile.add_argument("--csv", type=Path, default=paths.raw_csv_path, help="Ruta al archivo CSV crudo a perfilar")
     profile.add_argument("--report", type=Path, default=paths.get_profile_report_path(), help="Ruta al reporte Markdown de salida")
 
-    # Comando de tratamiento de nulos
+    # Null treatment command
     treat = subparsers.add_parser("treat", help="Tratar valores nulos y generar null_report.md (HU-04)")
     treat.add_argument("--csv", type=Path, default=paths.raw_csv_path)
     treat.add_argument("--output", type=Path, default=paths.clean_csv_path)
     treat.add_argument("--report", type=Path, default=paths.null_report_path)
 
-    # Comando de análisis de atípicos
+    # Outlier analysis command
     outliers = subparsers.add_parser("outliers", help="Analizar outliers y generar outlier_report.md (HU-05)")
     outliers.add_argument("--csv", type=Path, default=paths.clean_csv_path)
     outliers.add_argument("--output", type=Path, default=paths.outlier_csv_path)
     outliers.add_argument("--report", type=Path, default=paths.outlier_report_path)
 
-    # Comando del pipeline de transformación
+    # Transformation pipeline command
     transform = subparsers.add_parser("transform", help="Ajustar pipeline y generar features (HU-06)")
     transform.add_argument("--csv", type=Path, default=paths.outlier_csv_path)
     transform.add_argument("--output", type=Path, default=paths.transformed_csv_path)
     transform.add_argument("--pipeline", type=Path, default=paths.pipeline_path)
+    transform.add_argument("--report", type=Path, default=paths.transformation_report_path)
 
-    # Comando completo
+    apply = subparsers.add_parser("apply", help="Aplicar pipeline guardado a datos nuevos (HU-06)")
+    apply.add_argument("--csv", type=Path, required=True)
+    apply.add_argument("--output", type=Path, default=paths.applied_csv_path)
+    apply.add_argument("--pipeline", type=Path, default=paths.pipeline_path)
+
+    validate = subparsers.add_parser("validate", help="Validar matriz y generar reporte HU-07")
+    validate.add_argument("--csv", type=Path, default=paths.transformed_csv_path)
+    validate.add_argument("--matrix", type=Path, default=paths.feature_matrix_csv_path)
+    validate.add_argument("--report", type=Path, default=paths.matrix_validation_report_path)
+
+    # All command
     all_cmd = subparsers.add_parser("all", help="Ejecutar ingesta, perfilado y tratamiento de extremo a extremo")
     all_cmd.add_argument("--csv", type=Path, default=paths.raw_csv_path, help="Ruta al archivo CSV crudo")
 
@@ -73,7 +86,11 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "outliers":
         return run_outlier_analysis_cmd(args.csv, args.output, args.report)
     if args.command == "transform":
-        return run_transform_cmd(args.csv, args.output, args.pipeline)
+        return run_transform_cmd(args.csv, args.output, args.pipeline, args.report)
+    if args.command == "apply":
+        return run_apply_cmd(args.csv, args.output, args.pipeline)
+    if args.command == "validate":
+        return run_validate_cmd(args.csv, args.matrix, args.report)
     if args.command == "all":
         if (code := run_ingestion_cmd(args.csv, paths.manifest_path)) != 0:
             return code
@@ -83,7 +100,19 @@ def main(argv: list[str] | None = None) -> int:
             return code
         if (code := run_outlier_analysis_cmd(paths.clean_csv_path, paths.outlier_csv_path, paths.outlier_report_path)) != 0:
             return code
-        return run_transform_cmd(paths.outlier_csv_path, paths.transformed_csv_path, paths.pipeline_path)
+        code = run_transform_cmd(
+            paths.outlier_csv_path,
+            paths.transformed_csv_path,
+            paths.pipeline_path,
+            paths.transformation_report_path,
+        )
+        if code != 0:
+            return code
+        return run_validate_cmd(
+            paths.transformed_csv_path,
+            paths.feature_matrix_csv_path,
+            paths.matrix_validation_report_path,
+        )
 
     parser.print_help()
     return 0

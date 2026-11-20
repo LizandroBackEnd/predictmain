@@ -169,6 +169,8 @@ Variables de entrada finales:
 
 `Type_H` se elimina como categoría de referencia (`drop='first'`).
 
+El escalador y el codificador se ajustan solo con el 80 % de entrenamiento (8,000 filas, división estratificada con `random_state=42`); el 20 % restante únicamente se transforma, sin re-ajuste. El CSV transformado conserva las 10,000 filas para trazabilidad.
+
 Variables excluidas:
 
 - `UDI` y `Product ID`: identificadores, no predictivos.
@@ -183,7 +185,11 @@ Resultado:
 | Variable objetivo | `Machine failure` |
 | Columnas de salida | 9 (8 variables + objetivo) |
 
-Evidencia: `data/processed/ai4i2020_transformed.csv` y `ml_service/artifacts/pipeline.joblib`.
+Evidencia: `data/processed/ai4i2020_transformed.csv`, `ml_service/artifacts/pipeline.joblib` y `reports/transformation_report.md`.
+
+### 3.6 Validación de la matriz (HU-07)
+
+La matriz final se exporta sin la variable objetivo en `data/processed/ai4i2020_features.csv` (`shape=(10000, 8)`). El comando `validate` verifica los seis criterios de aceptación (variables documentadas, objetivo separada, sin nulos, dtypes numéricos, sin fuga de información y dimensiones registradas) y genera `reports/matrix_validation_report.md` con la tabla ✔/✘ por criterio.
 
 ## 4. Comparativa de datasets
 
@@ -211,11 +217,13 @@ python -m src.cli ingest --csv ..\data\raw\ai4i2020.csv --manifest ..\data\raw\m
 python -m src.cli profile --csv ..\data\raw\ai4i2020.csv --report ..\data\profiling\data-profile-2026-11-11.md
 python -m src.cli treat --csv ..\data\raw\ai4i2020.csv --output ..\data\processed\ai4i2020_clean.csv --report ..\reports\null_report.md
 python -m src.cli outliers --csv ..\data\processed\ai4i2020_clean.csv --output ..\data\processed\ai4i2020_outlier_analyzed.csv --report ..\reports\outlier_report.md
-python -m src.cli transform --csv ..\data\processed\ai4i2020_outlier_analyzed.csv --output ..\data\processed\ai4i2020_transformed.csv --pipeline artifacts\pipeline.joblib
+python -m src.cli transform --csv ..\data\processed\ai4i2020_outlier_analyzed.csv --output ..\data\processed\ai4i2020_transformed.csv --pipeline artifacts\pipeline.joblib --report ..\reports\transformation_report.md
+python -m src.cli apply --csv ..\data\raw\ai4i2020.csv --output ..\data\processed\ai4i2020_applied.csv --pipeline artifacts\pipeline.joblib
+python -m src.cli validate --csv ..\data\processed\ai4i2020_transformed.csv --matrix ..\data\processed\ai4i2020_features.csv --report ..\reports\matrix_validation_report.md
 ```
 
 Log completo: `evidencias/pipeline_ejecucion.log`.
 
 ## 7. Nota sobre traducción
 
-Las copias de los scripts en `03_dataset/ml_service/` conservan el código original. **Solo se tradujeron los comentarios `#` al español.** Los docstrings, strings, justificaciones de reportes y nombres de variables permanecen en su idioma original.
+Las copias de los scripts en `03_dataset/ml_service/` se sincronizaron con el código principal tras la corrección anti-leakage (fit solo con entrenamiento). Los docstrings, strings, justificaciones de reportes y nombres de variables permanecen en su idioma original.

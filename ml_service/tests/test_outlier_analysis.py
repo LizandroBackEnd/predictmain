@@ -200,6 +200,9 @@ class TestOutlierAnalysisService(unittest.TestCase):
         self.assertIn("Detección por Columna", content)
         self.assertIn("Decisión por Variable", content)
         self.assertIn("Justificación Técnica", content)
+        self.assertIn("Clasificación de outliers por tipo", content)
+        self.assertIn("Error de medición", content)
+        self.assertIn("0 errores de medición", content)
         self.assertIn("Conclusión", content)
 
     # ------------------------------------------------------------------

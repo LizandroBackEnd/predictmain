@@ -1,13 +1,20 @@
-"""Infrastructure adapters for Markdown report generation (profiling, null treatment, outliers)."""
+"""Infrastructure adapters for Markdown report generation."""
 
 from datetime import datetime
 
-from src.domain.models import DatasetSummary, NullTreatmentResult, OutlierAnalysisResult
+from src.domain.models import (
+    ColumnOutlierStat,
+    DatasetSummary,
+    MatrixValidationResult,
+    NullTreatmentResult,
+    OutlierAnalysisResult,
+    TransformationRunResult,
+)
 from src.domain.outlier_rules import OUTLIER_RULES
 
 
 # ---------------------------------------------------------------------------
-# Utilidad compartida
+# Shared helper
 # ---------------------------------------------------------------------------
 
 
@@ -20,7 +27,7 @@ def _md_table(headers: list[str], rows: list[list[str]]) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Reporte de perfilado
+# Profiling report
 # ---------------------------------------------------------------------------
 
 
@@ -204,7 +211,7 @@ def build_profiling_report(summary: DatasetSummary, filename: str) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Reporte de tratamiento de nulos
+# Null treatment report
 # ---------------------------------------------------------------------------
 
 
@@ -302,7 +309,7 @@ def build_null_report(result: NullTreatmentResult) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Reporte de análisis de atípicos
+# Outlier analysis report
 # ---------------------------------------------------------------------------
 
 
@@ -389,10 +396,48 @@ def build_outlier_report(result: OutlierAnalysisResult) -> str:
             "",
         ]
 
+    type_labels: dict[str, str] = {
+        "measurement_error": "Error de medición",
+        "valid_extreme": "Valor extremo válido",
+        "failure_signal": "Posible señal de falla",
+    }
+    classification_rows: list[list[str]] = []
+    for key, label in type_labels.items():
+        stats: list[ColumnOutlierStat] = [
+            s for s in result.column_stats if s.outlier_type == key
+        ]
+        classification_rows.append([
+            label,
+            str(len(stats)),
+            f"{sum(s.records_detected for s in stats):,}",
+            f"{sum(s.outside_physical_range for s in stats):,}",
+        ])
+
+    total_outside = sum(s.outside_physical_range for s in result.column_stats)
+    physical_note = (
+        "No se registraron valores fuera de los rangos físicos UCI: "
+        "**0 errores de medición**. Los extremos detectados son valores válidos "
+        "o precursores de falla."
+        if total_outside == 0
+        else f"Se registraron **{total_outside:,}** valores fuera de rango físico UCI; "
+        "revisar la fila de error de medición antes de aceptar la decisión."
+    )
+
     lines += [
         "---",
         "",
-        "## 5. Conclusión",
+        "## 5. Clasificación de outliers por tipo",
+        "",
+        _md_table(
+            ["Tipo", "Variables", "Registros detectados", "Fuera de rango UCI"],
+            classification_rows,
+        ),
+        "",
+        f"> {physical_note}",
+        "",
+        "---",
+        "",
+        "## 6. Conclusión",
         "",
         f"Se analizaron **{len(result.column_stats)} variables** de sensores. "
         f"Se detectaron **{result.total_detected:,} valores atípicos** en total "
@@ -410,5 +455,168 @@ def build_outlier_report(result: OutlierAnalysisResult) -> str:
         )
 
     lines += ["", "---", "", f"> **Reporte generado:** {result.executed_at}", ""]
+    return "\n".join(lines)
+
+
+# ---------------------------------------------------------------------------
+# Transformation pipeline report
+# ---------------------------------------------------------------------------
+
+
+def build_transformation_report(result: TransformationRunResult) -> str:
+    """Render the transformation audit report as Markdown."""
+    split_label = (
+        f"{1 - result.test_size:.0%} / {result.test_size:.0%}"
+        f"{' estratificada' if result.stratified else ' aleatoria'}"
+    )
+    lines: list[str] = [
+        "# Reporte de Pipeline de Transformación — HU-06",
+        "",
+        "> Generado automáticamente por el pipeline de análisis de PredictMain.",
+        "",
+        "---",
+        "",
+        "## 1. Resumen Ejecutivo",
+        "",
+        "| Métrica | Valor |",
+        "| :--- | :--- |",
+        f"| Archivo analizado | `{result.source_file}` |",
+        f"| Fecha de ejecución | {result.executed_at} |",
+        f"| Registros de entrada | {result.rows_input:,} |",
+        f"| Registros usados en `fit` | {result.train_rows:,} |",
+        f"| Registros usados solo en `transform` | {result.test_rows:,} |",
+        f"| Registros transformados en salida | {result.rows_output:,} |",
+        f"| División | {split_label} (`random_state={result.random_state}`) |",
+        f"| Nulos en la matriz final | {result.null_count:,} |",
+        f"| Artefacto serializado | `{result.pipeline_path}` |",
+        "",
+        "> **Anti-leakage:** `StandardScaler` y `OneHotEncoder` se ajustaron "
+        "únicamente con el conjunto de entrenamiento. El conjunto de prueba se "
+        "transformó sin re-ajustar el pipeline.",
+        "",
+        "---",
+        "",
+        "## 2. Matriz de características final",
+        "",
+        f"{len(result.feature_columns)} predictoras: 5 sensores escalados, "
+        "`Temp_diff` (derivada) y `Type_L` / `Type_M` (One-Hot con `Type_H` "
+        "como referencia).",
+        "",
+        _md_table(
+            ["#", "Variable"],
+            [[str(i), f"`{col}`"] for i, col in enumerate(result.feature_columns, 1)],
+        ),
+        "",
+        f"Variable objetivo separada: `{result.target_column}`.",
+        "",
+        "---",
+        "",
+        "## 3. Columnas excluidas de la matriz",
+        "",
+        _md_table(
+            ["Columna", "Motivo"],
+            [
+                [
+                    f"`{col}`",
+                    "Variable objetivo"
+                    if col == result.target_column
+                    else "Identificador o etiqueta de falla posterior (leakage)",
+                ]
+                for col in result.excluded_columns
+            ],
+        ),
+        "",
+        "---",
+        "",
+        "## 4. Trazabilidad de la división",
+        "",
+        "| Parámetro | Valor |",
+        "| :--- | :--- |",
+        f"| Estrategia | {'Estratificada' if result.stratified else 'Aleatoria'} |",
+        f"| `test_size` | {result.test_size} |",
+        f"| `random_state` | {result.random_state} |",
+        f"| Filas de entrenamiento | {result.train_rows:,} |",
+        f"| Filas de prueba | {result.test_rows:,} |",
+        "",
+        "El CSV transformado conserva todas las filas para trazabilidad; la "
+        "división se reproduce con `split_dataset()` y la misma semilla antes "
+        "de entrenar el modelo.",
+        "",
+        "---",
+        "",
+        "## 5. Conclusión",
+        "",
+        "El pipeline se ajustó solo con entrenamiento, transformó la prueba sin "
+        "errores y quedó serializado para aplicar el mismo procesamiento a datos "
+        "nuevos en producción.",
+        "",
+        "---",
+        "",
+        f"> **Reporte generado:** {result.executed_at}",
+        "",
+    ]
+    return "\n".join(lines)
+
+
+# ---------------------------------------------------------------------------
+# Feature matrix validation report
+# ---------------------------------------------------------------------------
+
+
+def build_matrix_validation_report(result: MatrixValidationResult) -> str:
+    """Render the HU-07 validation report with shape and checklist."""
+    verdict = (
+        "**Todas las verificaciones pasaron.** La matriz está lista para el entrenamiento."
+        if result.passed
+        else "**Existen verificaciones fallidas.** Revisar los criterios marcados con ✘."
+    )
+    lines: list[str] = [
+        "# Reporte de Validación de Matriz de Características — HU-07",
+        "",
+        "> Generado automáticamente por el pipeline de análisis de PredictMain.",
+        "",
+        "---",
+        "",
+        "## 1. Dimensiones de la matriz",
+        "",
+        "| Objeto | Shape |",
+        "| :--- | :--- |",
+        f"| Matriz de predictoras `X` | `{result.x_shape}` |",
+        f"| Variable objetivo `y` | `{result.y_shape}` |",
+        "",
+        f"Archivo validado: `{result.source_file}`.",
+        f"Fecha de ejecución: {result.executed_at}.",
+        "",
+        "---",
+        "",
+        "## 2. Verificación por criterio de aceptación",
+        "",
+        _md_table(
+            ["#", "Criterio", "Resultado", "Detalle"],
+            [
+                [
+                    str(check.criterion),
+                    check.name,
+                    "✔" if check.passed else "✘",
+                    check.detail,
+                ]
+                for check in result.checks
+            ],
+        ),
+        "",
+        "---",
+        "",
+        "## 3. Conclusión",
+        "",
+        verdict,
+        "",
+        f"Columnas de la matriz: {', '.join(f'`{c}`' for c in result.feature_columns)}.",
+        f"Variable objetivo separada: `{result.target_column}`.",
+        "",
+        "---",
+        "",
+        f"> **Reporte generado:** {result.executed_at}",
+        "",
+    ]
     return "\n".join(lines)
 

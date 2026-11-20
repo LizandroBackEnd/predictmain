@@ -21,7 +21,7 @@ Type (categorical: L / M / H)
     relationship. drop='first' removes one column to avoid multicollinearity
     (dummy variable trap). handle_unknown='ignore' ensures the pipeline does
     not raise errors on unseen categories at inference time.
-    Result columns: Type_M, Type_H  (Type_L is the dropped reference).
+    Result columns: Type_L, Type_M  (Type_H is the dropped reference).
 
 Scaling
 -------
