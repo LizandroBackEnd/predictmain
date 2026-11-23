@@ -95,5 +95,14 @@
     "abstention": "No tengo evidencia suficiente",
     "status": "designed_pending_implementation"
   },
-  "status": "pending_execution"
+  "status": "executed",
+  "execution": {
+    "selected_model": "random_forest",
+    "model_artifact": "ml_service/artifacts/modelo.joblib",
+    "metrics_report": "reports/model_baseline.md",
+    "train_rows": 7500,
+    "test_rows": 2500,
+    "random_state": 42,
+    "stratified": true
+  }
 }

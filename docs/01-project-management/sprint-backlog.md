@@ -34,9 +34,11 @@ El sprint inicial construye el corpus documental, la infraestructura de trazabil
 | **#32** | HU-07 — Separar y validar la matriz de características | `ml_service/src/application/matrix_validation.py`, `ml_service/src/interfaces/cli/commands.py` (`run_validate_cmd`) | `data/processed/ai4i2020_features.csv`, `reports/matrix_validation_report.md` |
 | **#33** | HU-07 — Revisar calidad de datos y fuga de información | `ml_service/src/application/matrix_validation.py` (checks 3, 4 y 5), `ml_service/src/application/dataset_split.py` | `reports/matrix_validation_report.md` §2 |
 | **#34** | HU-07 — Generar reporte final de validación | `ml_service/src/infrastructure/reporting.py` (`build_matrix_validation_report`) | `reports/matrix_validation_report.md` |
-| **#35** | HU-08 — División estratégica y preparación del dataset | `ml_service/src/application/dataset_split.py` | `reports/model_baseline.md` §2 |
-| **#36** | HU-08 — Entrenamiento de modelos base y serialización | `ml_service/src/application/` (por implementar) | `ml_service/artifacts/modelo.joblib` |
-| **#37** | HU-08 — Evaluación de métricas y generación del reporte final | `ml_service/src/infrastructure/reporting.py` (por implementar) | `reports/model_baseline.md` |
+| **#35** | HU-08 — División estratégica y preparación del dataset | `ml_service/src/application/dataset_split.py`, `ml_service/src/application/baseline_training.py` (`test_size=0.25`) | `reports/model_baseline.md` §1 |
+| **#36** | HU-08 — Entrenamiento de modelos base y serialización | `ml_service/src/application/baseline_training.py`, `ml_service/src/interfaces/cli/commands.py` (`run_train_cmd`) | `ml_service/artifacts/modelo.joblib` |
+| **#37** | HU-08 — Evaluación de métricas y generación del reporte final | `ml_service/src/infrastructure/reporting.py` (`build_model_baseline_report`) | `reports/model_baseline.md` |
+
+> **Estado HU-08:** implementado y ejecutado. Modelo seleccionado: `random_forest`. Evidencia en `reports/model_baseline.md`. OpenSpec: `openspec/changes/train-baseline-model/`.
 
 > **Convención oficial:** HU-01 corpus; HU-02 ingesta; HU-03 perfilado; HU-04 nulos; HU-05 outliers; HU-06 transformación; HU-07 matriz; HU-08 entrenamiento. La documentación histórica usó un desfase de una posición: ingesta HU-01, perfilado HU-02, nulos HU-03, outliers HU-04, transformación HU-05, matriz HU-06 y entrenamiento HU-07.
 

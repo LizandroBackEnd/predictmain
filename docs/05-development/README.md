@@ -22,7 +22,7 @@
 
 | Documento | Descripción | Cobertura |
 | :--- | :--- | :---: |
-| [Pipeline de Datos y Telemetría](./data-pipeline.md) | Guía técnica de ejecución, CLI unificada, verificación SHA-256 e idempotencia | **HU-02**, **HU-03** |
+| [Pipeline de Datos y Modelo Base](./data-pipeline.md) | CLI, Clean Architecture, anti-fuga, entrenamiento HU-08 y pruebas | **HU-02** … **HU-08** |
 
 ---
 
@@ -40,12 +40,16 @@ cd ml_service
 source .venv/bin/activate
 pip install -r requirements.txt
 
-# Pipeline de datos
-python -m src.cli ingest     # HU-02: Ingesta y manifiesto
-python -m src.cli profile    # HU-03: Perfilado de telemetría
-python -m src.cli all        # Extremo a extremo
+# Pipeline de datos y modelo base
+python -m src.cli ingest     # HU-02
+python -m src.cli profile    # HU-03
+python -m src.cli treat      # HU-04
+python -m src.cli outliers   # HU-05
+python -m src.cli transform  # HU-06
+python -m src.cli validate   # HU-07
+python -m src.cli train      # HU-08 → artifacts/modelo.joblib + reports/model_baseline.md
+python -m src.cli all        # hasta validate (sin train)
 
 # Pruebas unitarias
 python -m unittest discover -s tests
 ```
-

@@ -82,4 +82,4 @@ La partición debe ser estratificada por `Machine failure`, con semilla `42`, se
 
 ## 9. Estado
 
-**Dataset listo para entrenamiento.** La partición y el entrenamiento quedan pendientes de ejecución.
+**Dataset listo y usado en HU-08.** Partición 75/25 estratificada (`random_state=42`) y entrenamiento de línea base ejecutados; artefactos en `ml_service/artifacts/modelo.joblib` y `reports/model_baseline.md`.

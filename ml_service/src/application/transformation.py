@@ -136,6 +136,15 @@ class TransformationService:
         )
         return continuous_names + ohe_names
 
+    @property
+    def pipeline(self) -> Pipeline:
+        """Return the fitted sklearn pipeline used for transform."""
+        if self._pipeline is None:
+            raise RuntimeError(
+                "Pipeline is not fitted. Call fit_transform() or load() first."
+            )
+        return self._pipeline
+
     def save(self, path: Path) -> None:
         """Serialize the fitted pipeline to disk."""
         if self._pipeline is None:

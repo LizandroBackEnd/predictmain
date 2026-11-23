@@ -1,6 +1,7 @@
 """Infrastructure adapter for ML pipeline persistence using joblib."""
 
 from pathlib import Path
+from typing import Any
 
 import joblib
 from sklearn.pipeline import Pipeline
@@ -26,5 +27,20 @@ def load_pipeline(path: Path) -> Pipeline:
     """
     if not path.exists():
         raise FileNotFoundError(f"Pipeline artifact not found: {path}")
+    return joblib.load(path)
+
+
+def save_estimator(estimator: Any, path: Path) -> None:
+    """Serialize a fitted estimator or composite model artifact to disk."""
+    if estimator is None:
+        raise ValueError("Cannot save a None estimator.")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    joblib.dump(estimator, path)
+
+
+def load_estimator(path: Path) -> Any:
+    """Deserialize a previously saved estimator artifact from disk."""
+    if not path.exists():
+        raise FileNotFoundError(f"Model artifact not found: {path}")
     return joblib.load(path)
 

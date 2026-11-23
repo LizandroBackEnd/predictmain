@@ -99,19 +99,19 @@ predictmain/
 ├── prisma/
 │   └── schema.prisma               # Modelos de datos: Assets, Telemetry, DocumentChunk
 │
-├── data/                           # Trazabilidad de datos (CRISP-DM / HU-02 a HU-07)
+├── data/                           # Trazabilidad de datos (CRISP-DM / HU-02 a HU-08)
 │   ├── raw/                        # Dataset original AI4I 2020 (Inalterable)
 │   └── processed/                  # Matrices transformadas de características
 │
 ├── ml_service/                     # Microservicio de ML e Inferencia
 │   ├── .venv/                      # Entorno virtual aislado de Python
 │   ├── requirements.txt            # Dependencias del pipeline de datos y ML
-│   ├── artifacts/                  # Pipelines serializados (.joblib)
+│   ├── artifacts/                  # pipeline.joblib (HU-06) y modelo.joblib (HU-08)
 │   ├── notebooks/                  # EDA y experimentos CRISP-DM
 │   ├── tests/                      # Pruebas unitarias del pipeline
 │   └── src/                        # Clean Architecture del pipeline
 │       ├── domain/                 # Entidades, reglas y modelos de dominio
-│       ├── application/            # Casos de uso de ingesta y transformación
+│       ├── application/            # Casos de uso: ingesta → entrenamiento base
 │       ├── infrastructure/         # Persistencia, reportes y rutas del workspace
 │       └── interfaces/cli/         # Comandos y entrypoint de la CLI
 │
@@ -218,7 +218,9 @@ python -m src.cli profile    # HU-03: genera data/profiling/data-profile-YYYY-MM
 python -m src.cli treat      # HU-04: trata nulos y genera reports/null_report.md
 python -m src.cli outliers   # HU-05: analiza outliers y genera reports/outlier_report.md
 python -m src.cli transform  # HU-06: transforma features y guarda artifacts/pipeline.joblib
-python -m src.cli all        # Ejecuta todas las etapas en orden
+python -m src.cli validate   # HU-07: valida la matriz y genera reports/matrix_validation_report.md
+python -m src.cli train      # HU-08: entrena línea base → artifacts/modelo.joblib + reports/model_baseline.md
+python -m src.cli all        # ingest → profile → treat → outliers → transform → validate
 
 # Correr suite de pruebas unitarias automatizadas
 python -m unittest discover -s tests
@@ -227,6 +229,7 @@ python -m unittest discover -s tests
 > **Tip:** También puedes ejecutar el pipeline directamente desde la raíz del proyecto sin cambiar de carpeta:
 > ```bash
 > PYTHONPATH=ml_service ./ml_service/.venv/bin/python -m src.cli all
+> PYTHONPATH=ml_service ./ml_service/.venv/bin/python -m src.cli train
 > PYTHONPATH=ml_service ./ml_service/.venv/bin/python -m unittest discover -s ml_service/tests
 > ```
 
@@ -243,7 +246,9 @@ python -m src.cli profile    # HU-03: genera data/profiling/data-profile-YYYY-MM
 python -m src.cli treat      # HU-04: trata valores nulos
 python -m src.cli outliers   # HU-05: analiza valores atípicos
 python -m src.cli transform  # HU-06: genera features y pipeline.joblib
-python -m src.cli all        # Ejecuta todas las etapas en orden
+python -m src.cli validate   # HU-07: valida la matriz de características
+python -m src.cli train      # HU-08: modelo base (modelo.joblib) y reporte de métricas
+python -m src.cli all        # ingest → profile → treat → outliers → transform → validate
 
 # Correr suite de pruebas unitarias automatizadas
 python -m unittest discover -s tests
@@ -251,7 +256,7 @@ python -m unittest discover -s tests
 
 > **Tip (Windows):** Ejecución directa desde la raíz:
 > ```powershell
-> $env:PYTHONPATH="ml_service"; .\ml_service\.venv\Scripts\python.exe -m src.cli all
+> $env:PYTHONPATH="ml_service"; .\ml_service\.venv\Scripts\python.exe -m src.cli train
 > ```
 
 ---
@@ -324,4 +329,6 @@ Para consultar el análisis a profundidad del dominio y la especificación forma
 - 📈 [Reportes de Perfilado de Telemetría (HU-03)](./data/profiling/)
 - 🧹 [Reporte de Tratamiento de Nulos (HU-04)](./reports/null_report.md)
 - 📊 [Reporte de Análisis de Outliers (HU-05)](./reports/outlier_report.md)
-- 🔄 [Pipeline de Datos, Clean Architecture y CLI](./docs/05-development/data-pipeline.md)
+- ✅ [Reporte de Validación de Matriz (HU-07)](./reports/matrix_validation_report.md)
+- 🎯 [Reporte de Modelo Base (HU-08)](./reports/model_baseline.md)
+- 🔄 [Pipeline de Datos, Modelo Base y CLI (HU-02 a HU-08)](./docs/05-development/data-pipeline.md)

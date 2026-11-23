@@ -39,7 +39,8 @@ PredictMain integra en un único entorno la gestión de activos, la telemetría 
 - **Validación estructural:** Verificación de rangos físicos e identificación de datos corruptos o fuera de escala en la ingesta.
 
 ### 2.3 Cálculo de Desgaste y Riesgo de Falla
-- **Motor de inferencia:** Evaluación automatizada del estado de la máquina a través del modelo de Machine Learning entrenado.
+- **Línea base supervisada (HU-08):** Clasificador entrenado con partición 75/25 estratificada; artefacto `ml_service/artifacts/modelo.joblib` y métricas en `reports/model_baseline.md`.
+- **Motor de inferencia:** Evaluación automatizada del estado de la máquina a través del modelo de Machine Learning entrenado (exposición HTTP FastAPI pendiente).
 - **Indicador de riesgo porcentual:** Cuantificación probabilística del riesgo de fallo inminente para facilitar la priorización operativa.
 - **Tipificación de fallas potenciales:** Detección de patrones asociados a modos de fallo mecánicos (desgaste de herramienta, disipación de calor, falla de potencia, sobreesfuerzo).
 

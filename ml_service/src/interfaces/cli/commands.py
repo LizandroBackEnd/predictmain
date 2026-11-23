@@ -8,6 +8,7 @@ from pathlib import Path
 
 import pandas as pd
 
+from src.application.baseline_training import BaselineTrainingService
 from src.application.dataset_split import split_dataset
 from src.application.ingestion import IngestionService
 from src.application.matrix_validation import validate_feature_matrix
@@ -283,5 +284,39 @@ def run_validate_cmd(
         return 0 if result.passed else 1
     except (ValueError, OSError) as exc:
         print(f"❌ Error durante la validación: {exc}", file=sys.stderr)
+        return 1
+
+
+def run_train_cmd(csv_path: Path, model_path: Path, report_path: Path) -> int:
+    """Train baseline classifiers, persist the selected model, and write metrics."""
+    print("=" * 60)
+    print("🎯 PredictMain — HU-08: Entrenamiento de modelo base")
+    print("=" * 60)
+    print(f"Dataset CSV:    {csv_path}")
+    print(f"Modelo:         {model_path}")
+    print(f"Reporte:        {report_path}\n")
+
+    service = BaselineTrainingService()
+    try:
+        result = service.run(
+            csv_path=csv_path,
+            model_path=model_path,
+            report_path=report_path,
+        )
+        print("✅ Entrenamiento de línea base completado.")
+        print(f"• Filas train/test:  {result.train_rows:,} / {result.test_rows:,}")
+        print(f"• Estratificado:     {result.stratified}")
+        print(f"• random_state:      {result.random_state}")
+        print(f"• Modelo elegido:    {result.selected_model}")
+        for row in result.metrics:
+            print(
+                f"• {row.name}: F1={row.f1:.4f} recall={row.recall:.4f} "
+                f"roc_auc={row.roc_auc:.4f}"
+            )
+        print(f"• Artefacto:         {result.model_path}")
+        print(f"• Reporte:           {result.report_path}\n")
+        return 0
+    except (FileNotFoundError, RuntimeError, ValueError, OSError) as exc:
+        print(f"❌ Error durante el entrenamiento: {exc}", file=sys.stderr)
         return 1
 

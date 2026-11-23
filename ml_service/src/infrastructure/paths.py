@@ -59,6 +59,10 @@ class ProjectPaths:
             self.reports_dir / "matrix_validation_report.md"
         )
 
+        # HU-08 paths
+        self.model_path = self.artifacts_dir / "modelo.joblib"
+        self.model_baseline_report_path = self.reports_dir / "model_baseline.md"
+
     def get_profile_report_path(self) -> Path:
         """Return the date-stamped profile report path for today's execution."""
         today = date.today().strftime("%Y-%m-%d")

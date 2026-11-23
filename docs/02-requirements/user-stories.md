@@ -142,3 +142,6 @@
 ### Entregable
 - `ml_service/artifacts/modelo.joblib`: clasificador ajustado con los datos de entrenamiento, listo para predecir el riesgo de falla.
 - `reports/model_baseline.md`: reporte con la tabla comparativa de accuracy, precision, recall, F1 y ROC-AUC de los dos modelos.
+
+### Estado
+**Implementado.** CLI: `python -m src.cli train`. Evidencia: `reports/model_baseline.md`. Guía: [`docs/05-development/data-pipeline.md`](../05-development/data-pipeline.md).

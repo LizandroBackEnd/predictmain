@@ -3,6 +3,7 @@
 from datetime import datetime
 
 from src.domain.models import (
+    BaselineTrainingResult,
     ColumnOutlierStat,
     DatasetSummary,
     MatrixValidationResult,
@@ -612,6 +613,77 @@ def build_matrix_validation_report(result: MatrixValidationResult) -> str:
         "",
         f"Columnas de la matriz: {', '.join(f'`{c}`' for c in result.feature_columns)}.",
         f"Variable objetivo separada: `{result.target_column}`.",
+        "",
+        "---",
+        "",
+        f"> **Reporte generado:** {result.executed_at}",
+        "",
+    ]
+    return "\n".join(lines)
+
+
+# ---------------------------------------------------------------------------
+# Baseline training report (HU-08)
+# ---------------------------------------------------------------------------
+
+
+def build_model_baseline_report(result: BaselineTrainingResult) -> str:
+    """Render the comparative baseline metrics report as Markdown."""
+    split_label = (
+        f"{1 - result.test_size:.0%} / {result.test_size:.0%}"
+        f"{' estratificada' if result.stratified else ' aleatoria'}"
+    )
+    metric_rows = [
+        [
+            f"`{row.name}`",
+            f"{row.accuracy:.4f}",
+            f"{row.precision:.4f}",
+            f"{row.recall:.4f}",
+            f"{row.f1:.4f}",
+            f"{row.roc_auc:.4f}",
+        ]
+        for row in result.metrics
+    ]
+    lines: list[str] = [
+        "# Reporte de Modelo Base — HU-08",
+        "",
+        "> Generado automáticamente por el pipeline de entrenamiento de PredictMain.",
+        "",
+        "---",
+        "",
+        "## 1. Resumen de la ejecución",
+        "",
+        "| Métrica | Valor |",
+        "| :--- | :--- |",
+        f"| Archivo fuente | `{result.source_file}` |",
+        f"| Fecha de ejecución | {result.executed_at} |",
+        f"| División | {split_label} |",
+        f"| `random_state` | {result.random_state} |",
+        f"| Filas de entrenamiento | {result.train_rows:,} |",
+        f"| Filas de prueba | {result.test_rows:,} |",
+        f"| Estratificación | {'Sí' if result.stratified else 'No'} |",
+        f"| Modelo seleccionado | `{result.selected_model}` |",
+        f"| Artefacto | `{result.model_path}` |",
+        "",
+        "Selección: mayor F1; en empate, mayor recall; si persiste el empate, "
+        "`random_forest`.",
+        "",
+        "---",
+        "",
+        "## 2. Comparativa de métricas (conjunto de prueba)",
+        "",
+        _md_table(
+            ["Modelo", "Accuracy", "Precision", "Recall", "F1", "ROC-AUC"],
+            metric_rows,
+        ),
+        "",
+        "---",
+        "",
+        "## 3. Conclusión",
+        "",
+        f"El modelo serializado en `{result.model_path}` es "
+        f"`{result.selected_model}`. El preprocesador HU-06 se ajustó solo "
+        "con el conjunto de entrenamiento antes de evaluar el test.",
         "",
         "---",
         "",

@@ -164,7 +164,7 @@ Versiones: registrar Python, pandas, scikit-learn, joblib y modelo LLM
 
 ## 6. Estado
 
-- Modelo predictivo: **definido, pendiente de ejecución en HU-08**.
+- Modelo predictivo: **ejecutado en HU-08** (`random_forest` seleccionado; ver `reports/model_baseline.md`).
 - Corpus: **procesado y validado**.
 - Agente RAG: **diseñado, pendiente de implementación**.
 - Fine-tuning: **descartado para Sprint 1**.

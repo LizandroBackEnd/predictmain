@@ -250,3 +250,37 @@ class MatrixValidationResult:
     @property
     def passed(self) -> bool:
         return all(check.passed for check in self.checks)
+
+
+# ---------------------------------------------------------------------------
+# Baseline training (HU-08)
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class ModelMetricRow:
+    """Test-set metrics for one baseline classifier."""
+
+    name: str
+    accuracy: float
+    precision: float
+    recall: float
+    f1: float
+    roc_auc: float
+
+
+@dataclass(frozen=True)
+class BaselineTrainingResult:
+    """Provenance and outcomes of a HU-08 baseline training run."""
+
+    source_file: str
+    executed_at: str
+    train_rows: int
+    test_rows: int
+    test_size: float
+    random_state: int
+    stratified: bool
+    metrics: list[ModelMetricRow]
+    selected_model: str
+    model_path: str
+    report_path: str
