@@ -9,11 +9,7 @@
 | Métrica | Valor |
 | :--- | :--- |
 | Archivo analizado | `ai4i2020_clean.csv` |
-<<<<<<< HEAD
-| Fecha de ejecución | 2026-11-20 07:57:01 UTC |
-=======
-| Fecha de ejecución | 2026-11-10 13:53:25 UTC |
->>>>>>> b423e3e501c4b85e37df6a0819df1e5601bff01c
+| Fecha de ejecución | 2026-11-23 00:59:40 UTC |
 | Registros de entrada | 10,000 |
 | Registros de salida | 10,000 |
 | Total outliers detectados (unión IQR+P1/P99) | 1,170 |
@@ -106,8 +102,4 @@ Se analizaron **5 variables** de sensores. Se detectaron **1,170 valores atípic
 
 ---
 
-<<<<<<< HEAD
-> **Reporte generado:** 2026-11-20 07:57:01 UTC
-=======
-> **Reporte generado:** 2026-11-10 13:53:25 UTC
->>>>>>> b423e3e501c4b85e37df6a0819df1e5601bff01c
+> **Reporte generado:** 2026-11-23 00:59:40 UTC

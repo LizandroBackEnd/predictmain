@@ -9,14 +9,14 @@
 | Métrica | Valor |
 | :--- | :--- |
 | Archivo fuente | `ai4i2020_outlier_analyzed.csv` |
-| Fecha de ejecución | 2026-11-23 00:52:00 UTC |
+| Fecha de ejecución | 2026-11-23 01:04:20 UTC |
 | División | 75% / 25% estratificada |
 | `random_state` | 42 |
 | Filas de entrenamiento | 7,500 |
 | Filas de prueba | 2,500 |
 | Estratificación | Sí |
 | Modelo seleccionado | `random_forest` |
-| Artefacto | `artifacts/modelo.joblib` |
+| Artefacto | `/home/lizdev/Escritorio/projects/predictmain/ml_service/artifacts/modelo.joblib` |
 
 Selección: mayor F1; en empate, mayor recall; si persiste el empate, `random_forest`.
 
@@ -33,8 +33,8 @@ Selección: mayor F1; en empate, mayor recall; si persiste el empate, `random_fo
 
 ## 3. Conclusión
 
-El modelo serializado en `artifacts/modelo.joblib` es `random_forest`. El preprocesador HU-06 se ajustó solo con el conjunto de entrenamiento antes de evaluar el test.
+El modelo serializado en `/home/lizdev/Escritorio/projects/predictmain/ml_service/artifacts/modelo.joblib` es `random_forest`. El preprocesador HU-06 se ajustó solo con el conjunto de entrenamiento antes de evaluar el test.
 
 ---
 
-> **Reporte generado:** 2026-11-23 00:52:00 UTC
+> **Reporte generado:** 2026-11-23 01:04:20 UTC

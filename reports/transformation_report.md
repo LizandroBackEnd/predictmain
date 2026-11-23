@@ -9,14 +9,14 @@
 | Métrica | Valor |
 | :--- | :--- |
 | Archivo analizado | `ai4i2020_outlier_analyzed.csv` |
-| Fecha de ejecución | 2026-11-20 08:01:24 UTC |
+| Fecha de ejecución | 2026-11-23 00:59:40 UTC |
 | Registros de entrada | 10,000 |
 | Registros usados en `fit` | 8,000 |
 | Registros usados solo en `transform` | 2,000 |
 | Registros transformados en salida | 10,000 |
 | División | 80% / 20% estratificada (`random_state=42`) |
 | Nulos en la matriz final | 0 |
-| Artefacto serializado | `ml_service\artifacts\pipeline.joblib` |
+| Artefacto serializado | `ml_service/artifacts/pipeline.joblib` |
 
 > **Anti-leakage:** `StandardScaler` y `OneHotEncoder` se ajustaron únicamente con el conjunto de entrenamiento. El conjunto de prueba se transformó sin re-ajustar el pipeline.
 
@@ -76,4 +76,4 @@ El pipeline se ajustó solo con entrenamiento, transformó la prueba sin errores
 
 ---
 
-> **Reporte generado:** 2026-11-20 08:01:24 UTC
+> **Reporte generado:** 2026-11-23 00:59:40 UTC

@@ -12,7 +12,7 @@
 | Variable objetivo `y` | `(10000,)` |
 
 Archivo validado: `ai4i2020_transformed.csv`.
-Fecha de ejecución: 2026-11-20 08:34:36 UTC.
+Fecha de ejecución: 2026-11-23 00:59:40 UTC.
 
 ---
 
@@ -38,4 +38,4 @@ Variable objetivo separada: `Machine failure`.
 
 ---
 
-> **Reporte generado:** 2026-11-20 08:34:36 UTC
+> **Reporte generado:** 2026-11-23 00:59:40 UTC
