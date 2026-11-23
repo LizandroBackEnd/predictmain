@@ -22,7 +22,7 @@
 
 | Documento | Descripción | Cobertura |
 | :--- | :--- | :---: |
-| [Pipeline de Datos y Telemetría](./data-pipeline.md) | Guía técnica de ejecución, CLI unificada, verificación SHA-256 e idempotencia | **HU-01**, **HU-02** |
+| [Pipeline de Datos y Telemetría](./data-pipeline.md) | Guía técnica de ejecución, CLI unificada, verificación SHA-256 e idempotencia | **HU-02**, **HU-03** |
 
 ---
 
@@ -41,8 +41,8 @@ source .venv/bin/activate
 pip install -r requirements.txt
 
 # Pipeline de datos
-python -m src.cli ingest     # HU-01: Ingesta y manifiesto
-python -m src.cli profile    # HU-02: Perfilado de telemetría
+python -m src.cli ingest     # HU-02: Ingesta y manifiesto
+python -m src.cli profile    # HU-03: Perfilado de telemetría
 python -m src.cli all        # Extremo a extremo
 
 # Pruebas unitarias

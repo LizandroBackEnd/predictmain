@@ -30,13 +30,13 @@ El clasificador y el agente se evalúan por separado. El agente consume la salid
 
 | Conjunto | Proporción | Registros aproximados |
 | --- | --- | --- |
-| Entrenamiento | 70% | 7,000 |
-| Validación | 15% | 1,500 |
-| Prueba | 15% | 1,500 |
+| Entrenamiento | 75% | 7,500 |
+| Prueba | 25% | 2,500 |
 
-- **Estratificación:** por `Machine failure` y `Type`.
+- **Estratificación:** por `Machine failure`.
 - **Semilla:** `random_state=42`.
-- **Regla:** el conjunto de prueba no se usa para ajustar el modelo ni el umbral.
+- **Regla:** el conjunto de prueba no se usa para ajustar el modelo, el pipeline ni el umbral.
+- HU-08 usa esta partición 75/25; la propuesta histórica 70/15/15 no se ejecutó.
 
 ### 2.3 Preprocesamiento
 
@@ -52,27 +52,27 @@ El escalador y el codificador se ajustan solo con el conjunto de entrenamiento.
 | Modelo | Rol | Ventaja |
 | --- | --- | --- |
 | Regresión logística | Línea base interpretable | Coeficientes claros y rápida |
-| Random Forest | Modelo no lineal | Robusto y captura interacciones |
-| Gradient Boosting | Modelo de alto desempeño | Buen rendimiento tabular |
-| HistGradientBoosting | Alternativa eficiente | Manejo nativo de datos tabulares |
+| Random Forest | Comparación principal | Robusto para datos tabulares y captura interacciones |
+
+Gradient Boosting y HistGradientBoosting quedan diferidos a una iteración posterior: requieren más ajuste y no son necesarios para la primera línea base.
 
 ### 2.5 Manejo del desbalance
 
 1. Usar `class_weight='balanced'` cuando el modelo lo permita.
 2. Evaluar con precision, recall, F1, ROC-AUC y PR-AUC.
-3. Ajustar el umbral de decisión en validación, priorizando recall.
+3. Mantener el umbral de decisión en `0.5` en la línea base; priorizar recall en el análisis y diferir su optimización hasta contar con validación.
 4. No aplicar SMOTE en la primera iteración; evaluar solo si el recall es insuficiente.
 5. Reportar la matriz de confusión con conteos absolutos.
 
 ### 2.6 Validación y métricas
 
-- Validación cruzada estratificada de 5 particiones sobre entrenamiento.
-- Selección de hiperparámetros con búsqueda acotada.
-- Evaluación final única sobre el conjunto de prueba.
+- Evaluación única sobre el conjunto de prueba con los parámetros fijos del config.
+- Validación cruzada y búsqueda de hiperparámetros diferidas a una iteración posterior.
 - Registro de semilla, versión de datos y versión de librerías.
 
 | Métrica | Uso |
 | --- | --- |
+| Accuracy | Proporción global de aciertos; insuficiente por sí sola con desbalance. |
 | Recall | Minimizar fallas no detectadas. |
 | Precision | Controlar falsas alarmas. |
 | F1 | Equilibrio general. |
@@ -80,7 +80,7 @@ El escalador y el codificador se ajustan solo con el conjunto de entrenamiento.
 | PR-AUC | Desempeño con clases desbalanceadas. |
 | Matriz de confusión | Visualizar falsos positivos y falsos negativos. |
 
-El umbral inicial será `0.5`. Se ajustará en validación buscando el mejor equilibrio entre recall y precision. El umbral final se documentará junto con el modelo.
+El umbral inicial será `0.5` y se mantendrá fijo en HU-08. La optimización buscando el mejor equilibrio entre recall y precision se documentará en una iteración con conjunto de validación.
 
 ### 2.7 Experimentos mínimos
 
@@ -88,9 +88,7 @@ El umbral inicial será `0.5`. Se ajustará en validación buscando el mejor equ
 | --- | --- |
 | E1 | Regresión logística con `class_weight='balanced'`. |
 | E2 | Random Forest con `class_weight='balanced'`. |
-| E3 | Gradient Boosting. |
-| E4 | HistGradientBoosting. |
-| E5 | Mejor modelo con umbral ajustado. |
+| E3 | Comparación y selección por mayor F1, con desempate por recall. |
 
 ## 3. Agente LLM
 
@@ -166,7 +164,7 @@ Versiones: registrar Python, pandas, scikit-learn, joblib y modelo LLM
 
 ## 6. Estado
 
-- Modelo predictivo: **definido, pendiente de ejecución**.
+- Modelo predictivo: **definido, pendiente de ejecución en HU-08**.
 - Corpus: **procesado y validado**.
 - Agente RAG: **diseñado, pendiente de implementación**.
 - Fine-tuning: **descartado para Sprint 1**.

@@ -4,13 +4,14 @@
 
 | Elemento | Valor |
 | :--- | :--- |
-| Ruta | `03_dataset/data/processed/ai4i2020_transformed.csv` |
+| Ruta | `03_dataset/data/processed/ai4i2020_outlier_analyzed.csv` |
 | Registros | 10,000 |
-| Columnas | 9 |
-| Variables de entrada | 8 |
+| Columnas | 14 |
+| Variables de entrada | 8 tras aplicar HU-06 |
 | Variable objetivo | `Machine failure` |
 | Nulos | 0 |
 | Duplicados | 0 |
+| Preprocesamiento | HU-06 se reajusta solo con el 75% de entrenamiento para evitar fuga |
 
 ## 2. Esquema
 
@@ -55,11 +56,10 @@ No se usan como entradas:
 
 | Conjunto | Proporción |
 | :--- | :--- |
-| Entrenamiento | 70% |
-| Validación | 15% |
-| Prueba | 15% |
+| Entrenamiento | 75% |
+| Prueba | 25% |
 
-La partición debe ser estratificada por `Machine failure` y `Type`, con semilla `42`.
+La partición debe ser estratificada por `Machine failure`, con semilla `42`, según HU-08. La propuesta histórica 70/15/15 no se ejecutó.
 
 ## 7. Artefactos relacionados
 
@@ -67,6 +67,9 @@ La partición debe ser estratificada por `Machine failure` y `Type`, con semilla
 | :--- | :--- |
 | Pipeline de preprocesamiento | `03_dataset/ml_service/artifacts/pipeline.joblib` |
 | Dataset transformado | `03_dataset/data/processed/ai4i2020_transformed.csv` |
+| Dataset de entrenamiento HU-08 | `03_dataset/data/processed/ai4i2020_outlier_analyzed.csv` |
+| Modelo base serializado | `ml_service/artifacts/modelo.joblib` |
+| Reporte de métricas | `reports/model_baseline.md` |
 | Comparativa de datasets | `03_dataset/evidencias/comparativa_datasets.md` |
 | Validación del dataset | `03_dataset/evidencias/validacion_dataset.md` |
 

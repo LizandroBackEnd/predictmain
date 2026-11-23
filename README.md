@@ -99,7 +99,7 @@ predictmain/
 ├── prisma/
 │   └── schema.prisma               # Modelos de datos: Assets, Telemetry, DocumentChunk
 │
-├── data/                           # Trazabilidad de datos (CRISP-DM / HU-01)
+├── data/                           # Trazabilidad de datos (CRISP-DM / HU-02 a HU-07)
 │   ├── raw/                        # Dataset original AI4I 2020 (Inalterable)
 │   └── processed/                  # Matrices transformadas de características
 │
@@ -213,8 +213,8 @@ source .venv/bin/activate
 pip install -r requirements.txt
 
 # --- Ejecución del Pipeline de Datos (Clean Architecture) ---
-python -m src.cli ingest     # HU-01: valida el CSV y genera/verifica manifest.json
-python -m src.cli profile    # HU-02: genera data/profiling/data-profile-YYYY-MM-DD.md
+python -m src.cli ingest     # HU-02: valida el CSV y genera/verifica manifest.json
+python -m src.cli profile    # HU-03: genera data/profiling/data-profile-YYYY-MM-DD.md
 python -m src.cli treat      # HU-04: trata nulos y genera reports/null_report.md
 python -m src.cli outliers   # HU-05: analiza outliers y genera reports/outlier_report.md
 python -m src.cli transform  # HU-06: transforma features y guarda artifacts/pipeline.joblib
@@ -238,8 +238,8 @@ python -m venv .venv
 pip install -r requirements.txt
 
 # --- Ejecución del Pipeline de Datos (Clean Architecture) ---
-python -m src.cli ingest     # HU-01: valida el dataset y verifica data/raw/manifest.json
-python -m src.cli profile    # HU-02: genera data/profiling/data-profile-YYYY-MM-DD.md
+python -m src.cli ingest     # HU-02: valida el dataset y verifica data/raw/manifest.json
+python -m src.cli profile    # HU-03: genera data/profiling/data-profile-YYYY-MM-DD.md
 python -m src.cli treat      # HU-04: trata valores nulos
 python -m src.cli outliers   # HU-05: analiza valores atípicos
 python -m src.cli transform  # HU-06: genera features y pipeline.joblib
@@ -321,7 +321,7 @@ Para consultar el análisis a profundidad del dominio y la especificación forma
 - 📋 [Acta de Proyecto y Objetivos](./docs/01-project-management/project-charter.md)
 - 📊 [Historias de Usuario (CRISP-DM)](./docs/02-requirements/user-stories.md)
 - 🔬 [Comprensión del Dataset AI4I 2020](./docs/03-analysis/data-understanding.md)
-- 📈 [Reportes de Perfilado de Telemetría (HU-02)](./data/profiling/)
+- 📈 [Reportes de Perfilado de Telemetría (HU-03)](./data/profiling/)
 - 🧹 [Reporte de Tratamiento de Nulos (HU-04)](./reports/null_report.md)
 - 📊 [Reporte de Análisis de Outliers (HU-05)](./reports/outlier_report.md)
 - 🔄 [Pipeline de Datos, Clean Architecture y CLI](./docs/05-development/data-pipeline.md)

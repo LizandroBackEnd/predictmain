@@ -9,7 +9,7 @@
 | Documento | Descripción | Tipo |
 | :--- | :--- | :---: |
 | [Comprensión del Dataset (Data Understanding)](./data-understanding.md) | Origen del dataset, diccionario de variables, modos mecánicos de falla y consideraciones de ingeniería | Especificación analítica |
-| [Reporte de Perfilado de Telemetría (Data Profile)](./data-profile.md) | Métricas descriptivas, rangos, conteos de cardinalidad, distribución de clases y validación UCI | Reporte generado automáticamente (**HU-02**) |
+| [Reporte de Perfilado de Telemetría (Data Profile)](./data-profile.md) | Métricas descriptivas, rangos, conteos de cardinalidad, distribución de clases y validación UCI | Reporte generado automáticamente (**HU-03**) |
 
 ---
 

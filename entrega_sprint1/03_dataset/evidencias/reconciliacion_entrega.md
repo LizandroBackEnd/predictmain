@@ -21,8 +21,10 @@ Generado automáticamente por `scripts_evidencia/reconciliar_entrega.py`.
 | Copia `data/processed/ai4i2020_transformed.csv` | OK | SHA-256 idéntico |
 | Copia `ml_service/src/__init__.py` | OK | SHA-256 idéntico |
 | Copia `ml_service/src/application/__init__.py` | OK | SHA-256 idéntico |
+| Copia `ml_service/src/application/dataset_split.py` | OK | SHA-256 idéntico |
 | Copia `ml_service/src/application/features.py` | OK | SHA-256 idéntico |
 | Copia `ml_service/src/application/ingestion.py` | OK | SHA-256 idéntico |
+| Copia `ml_service/src/application/matrix_validation.py` | OK | SHA-256 idéntico |
 | Copia `ml_service/src/application/null_treatment.py` | OK | SHA-256 idéntico |
 | Copia `ml_service/src/application/outlier_analysis.py` | OK | SHA-256 idéntico |
 | Copia `ml_service/src/application/profiling.py` | OK | SHA-256 idéntico |

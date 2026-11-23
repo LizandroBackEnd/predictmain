@@ -1,6 +1,6 @@
 # Pipeline de Datos y Telemetría (Clean Architecture)
 
-> Guía técnica de ejecución, arquitectura y testing del pipeline de ingesta y perfilado de datos para PredictMain (**HU-01** y **HU-02**).
+> Guía técnica de ejecución, arquitectura y testing del pipeline de ingesta y perfilado de datos para PredictMain (**HU-02** y **HU-03**).
 
 ---
 
@@ -13,10 +13,10 @@ ml_service/src/
 ├── domain/               # Entidades y value objects inmutables
 │   └── models.py         # ManifestData, ValidationResult, DatasetSummary, ColumnMetric
 │
-├── ingestion/            # Caso de Uso: Ingesta e integridad (HU-01)
+├── ingestion/            # Caso de Uso: Ingesta e integridad (HU-02)
 │   └── service.py        # Validación estructural, cálculo SHA-256 e idempotencia
 │
-├── profiling/            # Caso de Uso: Perfilado estadístico (HU-02)
+├── profiling/            # Caso de Uso: Perfilado estadístico (HU-03)
 │   ├── service.py        # Métricas, cardinalidad y distribución de clases
 │   └── report_builder.py # Generador del reporte técnico Markdown
 │
@@ -34,9 +34,9 @@ En la versión preliminar del proyecto (`PredictMain` anterior / refactor), el p
 
 | Funcionalidad | Script Anterior (Legacy) | Comando Actual Unificado (Clean Architecture) | Historia de Usuario |
 | :--- | :--- | :--- | :---: |
-| **Ingesta y Manifiesto** | `python scripts/create_manifest.py` | `python -m src.cli ingest` | **HU-01** |
-| **Perfilado Estadístico** | `python scripts/profile_data.py` | `python -m src.cli profile` | **HU-02** |
-| **Ejecución Completa** | *(No existía — requería 2 pasos manuales)* | `python -m src.cli all` | **HU-01 + HU-02** |
+| **Ingesta y Manifiesto** | `python scripts/create_manifest.py` | `python -m src.cli ingest` | **HU-02** |
+| **Perfilado Estadístico** | `python scripts/profile_data.py` | `python -m src.cli profile` | **HU-03** |
+| **Ejecución Completa** | *(No existía — requería 2 pasos manuales)* | `python -m src.cli all` | **HU-02 + HU-03** |
 
 ---
 
@@ -82,7 +82,7 @@ $env:PYTHONPATH="ml_service"; .\ml_service\.venv\Scripts\python.exe -m src.cli a
 
 ## 4. Detalle de Salidas y Comportamiento
 
-### Comando: `python -m src.cli ingest` (HU-01)
+### Comando: `python -m src.cli ingest` (HU-02)
 - **Entrada:** `data/raw/ai4i2020.csv` (10,000 registros, 14 columnas, permisos de solo lectura `chmod 444`).
 - **Salida:** `data/raw/manifest.json`.
 - **Garantía de Idempotencia:**
@@ -91,7 +91,7 @@ $env:PYTHONPATH="ml_service"; .\ml_service\.venv\Scripts\python.exe -m src.cli a
   3. Si `manifest.json` ya existe y el hash coincide exactamente, preserva el manifiesto existente (`Existing manifest verified and preserved. Hash matches.`).
   4. Si el archivo CSV fue modificado o corrupto, aborta inmediatamente con excepción de violación de integridad sin sobrescribir.
 
-### Comando: `python -m src.cli profile` (HU-02)
+### Comando: `python -m src.cli profile` (HU-03)
 - **Entrada:** `data/raw/ai4i2020.csv`.
 - **Salida:** `docs/03-analysis/data-profile.md`.
 - **Métricas computadas:**

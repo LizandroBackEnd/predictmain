@@ -35,8 +35,8 @@ Evidencia: `evidencias/reconciliacion_entrega.md`.
 03_dataset/ml_service/
 ├── src/
 │   ├── application/
-│   │   ├── ingestion.py          # HU-01: validación e integridad
-│   │   ├── profiling.py          # HU-02: perfilado estadístico
+│   │   ├── ingestion.py          # HU-02: validación e integridad
+│   │   ├── profiling.py          # HU-03: perfilado estadístico
 │   │   ├── null_treatment.py     # HU-04: tratamiento de nulos
 │   │   ├── outlier_analysis.py   # HU-05: análisis de atípicos
 │   │   ├── transformation.py     # HU-06: escalado y codificación
@@ -55,7 +55,7 @@ Evidencia: `evidencias/reconciliacion_entrega.md`.
 
 ## 3. Etapas del pipeline
 
-### 3.1 Ingesta (HU-01)
+### 3.1 Ingesta (HU-02)
 
 - Lee el CSV crudo.
 - Calcula SHA-256.
@@ -63,7 +63,7 @@ Evidencia: `evidencias/reconciliacion_entrega.md`.
 - Si el hash no coincide con un manifiesto existente, aborta sin sobrescribir.
 - No modifica el archivo crudo.
 
-### 3.2 Perfilado (HU-02)
+### 3.2 Perfilado (HU-03)
 
 Genera `data/profiling/data-profile-2026-11-11.md` con:
 

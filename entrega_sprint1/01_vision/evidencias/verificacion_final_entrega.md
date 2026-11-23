@@ -74,6 +74,6 @@ sobre las fuentes canónicas.
 | Elemento | Estado | Motivo |
 |---|---|---|
 | Exportación a PDF | Diferido | Lo realizará el equipo a partir de estos Markdown. |
-| Entrenamiento y métricas de modelos | Diferido | Planificado para Sprint 2 según `05_entrenamiento/config_entrenamiento.json`. |
+| Entrenamiento y métricas de modelos (HU-08) | Diferido | Planificado según `05_entrenamiento/config_entrenamiento.json`; entregable: `ml_service/artifacts/modelo.joblib` y `reports/model_baseline.md`. |
 | Implementación del flujo RAG | Diferido | Planificado para Sprint 2. |
 | Pruebas unitarias de `ml_service/tests/` | No ejecutadas | La entrega no modificó el código canónico; la copia se verificó por SHA-256. |
