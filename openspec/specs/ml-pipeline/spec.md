@@ -66,6 +66,7 @@ The domain layer MUST reside in `ml_service/src/domain/` and MUST contain zero d
 ### REQ-03: Decoupled Application Use Cases
 
 All pipeline orchestrations and business use cases MUST reside under `ml_service/src/application/`, and the Sprint 1 delivery copy MUST expose the same use-case behavior and output contracts as the canonical pipeline.
+(Previously: covered ingestion, null treatment, and transformation only; now also requires a baseline training use case under application/)
 
 #### Scenario: Ingestion Use Case
 - **GIVEN** a raw CSV dataset file
@@ -88,11 +89,16 @@ All pipeline orchestrations and business use cases MUST reside under `ml_service
 - **AND** all estimator signatures (e.g. `fit(X, y=None)`) SHALL be strictly typed with PEP 484 annotations
 - **AND** the output schema and serialized pipeline behavior MUST match the canonical pipeline.
 
----
+#### Scenario: Baseline Training Use Case
+- **GIVEN** a processed labeled dataset and the HU-06 transformation contract
+- **WHEN** the baseline training application service is executed
+- **THEN** training orchestration SHALL live under `ml_service/src/application/`
+- **AND** it SHALL reuse `split_dataset` with an explicit 75/25 contract for HU-08 without requiring business logic in the CLI layer.
 
 ### REQ-04: Infrastructure Adapters & Path Resolution
 
 File I/O, Joblib persistence, and Markdown report rendering MUST be isolated in `ml_service/src/infrastructure/`.
+(Previously: resolved raw/processed/reports/pipeline paths only; now also resolves baseline model and metrics-report paths)
 
 #### Scenario: Dynamic Root Anchor
 - **GIVEN** CLI commands executed from either the project root or inside `ml_service/`
@@ -105,21 +111,30 @@ File I/O, Joblib persistence, and Markdown report rendering MUST be isolated in 
 - **WHEN** persisted to `ml_service/artifacts/pipeline.joblib`
 - **THEN** it SHALL be serializable and deserializable via a dedicated `JoblibStorage` adapter.
 
----
+#### Scenario: Baseline Model And Metrics Paths
+- **GIVEN** a successful baseline training run
+- **WHEN** infrastructure paths and adapters are used
+- **THEN** they SHALL resolve `ml_service/artifacts/modelo.joblib` and `reports/model_baseline.md`
+- **AND** persistence and report rendering SHALL remain outside the application/CLI business rules.
 
 ### REQ-05: Modular CLI Delivery Layer
 
 The CLI interface MUST be decoupled from business logic and reside under `ml_service/src/interfaces/cli/`.
+(Previously: routed ingest/profile/nulls/outliers/transform/apply/validate/all; now also routes `train`)
 
 #### Scenario: Unified CLI Routing
 - **GIVEN** command line invocations `python -m src.cli <command>`
-- **WHEN** subcommands `ingest`, `profile`, `nulls`, `outliers`, `transform`, or `all` are invoked
+- **WHEN** subcommands `ingest`, `profile`, `nulls`, `outliers`, `transform`, `apply`, `validate`, `train`, or `all` are invoked
 - **THEN** the CLI router SHALL delegate directly to application services
 - **AND** it SHALL return exit code 0 on success and exit code 1 with clean stderr logging on handled exceptions
 - **AND** no business logic or dataset transformation code SHALL live in CLI command files.
 
----
-
+#### Scenario: Train Subcommand
+- **GIVEN** a valid processed CSV path and default artifact destinations
+- **WHEN** `python -m src.cli train` is invoked
+- **THEN** the CLI SHALL delegate to the baseline training use case
+- **AND** on success it SHALL exit 0 after the model artifact and metrics report are written
+- **AND** on handled failure it SHALL exit 1 without embedding training logic in the command file.
 ### REQ-06: Delivery Pipeline Synchronization
 
 The Sprint 1 delivery copy of the Python ML pipeline MUST match the canonical pipeline source files and MUST include the requirements and loadable serialized pipeline artifact needed to reproduce the documented processing stages.
@@ -137,6 +152,23 @@ The Sprint 1 delivery copy of the Python ML pipeline MUST match the canonical pi
 - **AND** it MUST fail until the delivery copy is synchronized.
 
 ---
+
+### REQ-07: Baseline Training Use Case
+
+A baseline training orchestration MUST reside under `ml_service/src/application/` and MUST compose dataset splitting, HU-06 transformation fitting on train only, classifier training, test prediction, model selection, artifact persistence, and metrics reporting without embedding that logic in CLI handlers.
+
+#### Scenario: Training Use Case Happy Path
+- **GIVEN** a processed labeled CSV suitable for HU-08 training
+- **WHEN** the baseline training use case is executed
+- **THEN** it SHALL split the data 75/25 with a documented seed and stratification when feasible
+- **AND** it SHALL fit the HU-06 transformation pipeline on the training partition only
+- **AND** it SHALL train logistic regression and random forest baselines, evaluate them on the transformed test set, persist the selected model to `ml_service/artifacts/modelo.joblib`, and write `reports/model_baseline.md`.
+
+#### Scenario: Training Use Case Failure
+- **GIVEN** missing inputs, invalid labels, or an evaluation failure
+- **WHEN** the baseline training use case is executed
+- **THEN** it SHALL raise or return a handled failure
+- **AND** it SHALL NOT claim that a successful baseline artifact was produced.
 
 ## 3. Non-Functional Requirements
 
