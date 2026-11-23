@@ -203,3 +203,53 @@ class TransformationResult:
     rows: int
     feature_columns: list[str]
     pipeline_path: str | None   # None if not saved yet
+<<<<<<< HEAD
+
+
+@dataclass(frozen=True)
+class TransformationRunResult:
+    """Audit data for a documented, leakage-free transformation run."""
+
+    source_file: str
+    executed_at: str
+    rows_input: int
+    train_rows: int
+    test_rows: int
+    test_size: float
+    random_state: int
+    stratified: bool
+    feature_columns: list[str]
+    excluded_columns: list[str]
+    target_column: str
+    rows_output: int
+    null_count: int
+    pipeline_path: str
+
+
+@dataclass(frozen=True)
+class ValidationCheck:
+    """Single acceptance-criterion result for a feature matrix audit."""
+
+    criterion: int
+    name: str
+    passed: bool
+    detail: str
+
+
+@dataclass(frozen=True)
+class MatrixValidationResult:
+    """Outcome of validating the final feature matrix and target."""
+
+    source_file: str
+    executed_at: str
+    x_shape: tuple[int, int]
+    y_shape: tuple[int, ...]
+    feature_columns: list[str]
+    target_column: str
+    checks: list[ValidationCheck]
+
+    @property
+    def passed(self) -> bool:
+        return all(check.passed for check in self.checks)
+=======
+>>>>>>> b423e3e501c4b85e37df6a0819df1e5601bff01c

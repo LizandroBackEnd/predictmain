@@ -9,7 +9,11 @@
 | Métrica | Valor |
 | :--- | :--- |
 | Archivo analizado | `ai4i2020_clean.csv` |
+<<<<<<< HEAD
+| Fecha de ejecución | 2026-11-20 07:57:01 UTC |
+=======
 | Fecha de ejecución | 2026-11-13 00:07:34 UTC |
+>>>>>>> b423e3e501c4b85e37df6a0819df1e5601bff01c
 | Registros de entrada | 10,000 |
 | Registros de salida | 10,000 |
 | Total outliers detectados (unión IQR+P1/P99) | 1,170 |
@@ -79,15 +83,31 @@
 - **Decisión:** KEEP
 - **Tipo:** valid_extreme
 - **Rango físico UCI:** [0.0, 253.0]
-- **Justificación:** IQR fence is [-110.5, 325.5 min] — wider than the physical range, so IQR detects 0 outliers. P1/P99 flags 99 high-wear values (>230 min). High tool wear is physically expected before a TWF (tool wear failure) event and is the primary feature for that failure mode. All values are within UCI physical range [0–253 min]. Decision: KEEP — high wear is a direct failure-precursor feature.
+- **Justificación:** IQR fence is [-110.5, 325.5 min] — wider than the physical range, so IQR detects 0 outliers. P1/P99 flags 99 high-wear values (P99 = 222.00 min). High tool wear is physically expected before a TWF (tool wear failure) event and is the primary feature for that failure mode. All values are within UCI physical range [0–253 min]. Decision: KEEP — high wear is a direct failure-precursor feature.
 
 ---
 
-## 5. Conclusión
+## 5. Clasificación de outliers por tipo
+
+| Tipo | Variables | Registros detectados | Fuera de rango UCI |
+| :--- | :--- | :--- | :--- |
+| Error de medición | 0 | 0 | 0 |
+| Valor extremo válido | 3 | 456 | 0 |
+| Posible señal de falla | 2 | 714 | 0 |
+
+> No se registraron valores fuera de los rangos físicos UCI: **0 errores de medición**. Los extremos detectados son valores válidos o precursores de falla.
+
+---
+
+## 6. Conclusión
 
 Se analizaron **5 variables** de sensores. Se detectaron **1,170 valores atípicos** en total (unión de IQR 1.5× y percentiles P1/P99). 
 **Todos los outliers fueron conservados (KEEP):** representan señales físicas válidas o precursores de falla con valor predictivo para el modelo.
 
 ---
 
+<<<<<<< HEAD
+> **Reporte generado:** 2026-11-20 07:57:01 UTC
+=======
 > **Reporte generado:** 2026-11-13 00:07:34 UTC
+>>>>>>> b423e3e501c4b85e37df6a0819df1e5601bff01c

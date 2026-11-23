@@ -2,6 +2,8 @@
 
 > Especificación de Historias de Usuario (HU-01 a HU-07) bajo metodología CRISP-DM.
 
+> **Convención de numeración:** el Taskboard y el código identifican el análisis de atípicos como **HU-05** y el pipeline de transformación como **HU-06**; en este documento histórico aparecen como HU-04 y HU-05 respectivamente.
+
 ---
 
 ## HU-01: Recopilar e Ingerir Datos Crudos

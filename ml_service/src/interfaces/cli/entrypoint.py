@@ -8,11 +8,13 @@ from pathlib import Path
 
 from src.infrastructure.paths import paths
 from src.interfaces.cli.commands import (
+    run_apply_cmd,
     run_ingestion_cmd,
     run_null_treatment_cmd,
     run_outlier_analysis_cmd,
     run_profiling_cmd,
     run_transform_cmd,
+    run_validate_cmd,
 )
 
 
@@ -51,6 +53,17 @@ def build_parser() -> argparse.ArgumentParser:
     transform.add_argument("--csv", type=Path, default=paths.outlier_csv_path)
     transform.add_argument("--output", type=Path, default=paths.transformed_csv_path)
     transform.add_argument("--pipeline", type=Path, default=paths.pipeline_path)
+    transform.add_argument("--report", type=Path, default=paths.transformation_report_path)
+
+    apply = subparsers.add_parser("apply", help="Aplicar pipeline guardado a datos nuevos (HU-06)")
+    apply.add_argument("--csv", type=Path, required=True)
+    apply.add_argument("--output", type=Path, default=paths.applied_csv_path)
+    apply.add_argument("--pipeline", type=Path, default=paths.pipeline_path)
+
+    validate = subparsers.add_parser("validate", help="Validar matriz y generar reporte HU-07")
+    validate.add_argument("--csv", type=Path, default=paths.transformed_csv_path)
+    validate.add_argument("--matrix", type=Path, default=paths.feature_matrix_csv_path)
+    validate.add_argument("--report", type=Path, default=paths.matrix_validation_report_path)
 
     # All command
     all_cmd = subparsers.add_parser("all", help="Ejecutar ingesta, perfilado y tratamiento de extremo a extremo")
@@ -73,7 +86,11 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "outliers":
         return run_outlier_analysis_cmd(args.csv, args.output, args.report)
     if args.command == "transform":
-        return run_transform_cmd(args.csv, args.output, args.pipeline)
+        return run_transform_cmd(args.csv, args.output, args.pipeline, args.report)
+    if args.command == "apply":
+        return run_apply_cmd(args.csv, args.output, args.pipeline)
+    if args.command == "validate":
+        return run_validate_cmd(args.csv, args.matrix, args.report)
     if args.command == "all":
         if (code := run_ingestion_cmd(args.csv, paths.manifest_path)) != 0:
             return code
@@ -83,7 +100,19 @@ def main(argv: list[str] | None = None) -> int:
             return code
         if (code := run_outlier_analysis_cmd(paths.clean_csv_path, paths.outlier_csv_path, paths.outlier_report_path)) != 0:
             return code
-        return run_transform_cmd(paths.outlier_csv_path, paths.transformed_csv_path, paths.pipeline_path)
+        code = run_transform_cmd(
+            paths.outlier_csv_path,
+            paths.transformed_csv_path,
+            paths.pipeline_path,
+            paths.transformation_report_path,
+        )
+        if code != 0:
+            return code
+        return run_validate_cmd(
+            paths.transformed_csv_path,
+            paths.feature_matrix_csv_path,
+            paths.matrix_validation_report_path,
+        )
 
     parser.print_help()
     return 0

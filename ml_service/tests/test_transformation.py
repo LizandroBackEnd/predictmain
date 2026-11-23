@@ -3,7 +3,8 @@ HU-06 — Unit tests for the transformation pipeline.
 
 Tests cover:
   1. Temp_diff derived feature exists and has correct values.
-  2. One-Hot Encoding produces expected columns (Type_M, Type_H).
+   2. One-Hot Encoding produces expected columns (Type_L, Type_M).
+
   3. Excluded columns (UDI, Product ID, failure modes) are not in output.
   4. transform() on test data does not re-fit the pipeline.
   5. Pipeline saved and reloaded produces identical output.
@@ -19,6 +20,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from src.application.dataset_split import split_dataset
 from src.application.features import (
     DERIVED_FEATURE_NAME,
     EXPECTED_FEATURE_COLUMNS,
@@ -194,6 +196,29 @@ class TestTransformationService(unittest.TestCase):
                 mean, 0.0, places=10,
                 msg=f"{col} mean after scaling should be 0, got {mean}"
             )
+
+    def test_scaler_is_fitted_only_on_training_partition(self) -> None:
+        split = split_dataset(self.df_train, test_size=0.25, random_state=7)
+        X_train, _ = self.service.split_features_target(split.train)
+        X_test, _ = self.service.split_features_target(split.test)
+        X_full, _ = self.service.split_features_target(self.df_train)
+
+        self.service.fit_transform(X_train)
+        out_train = self.service.transform(X_train)
+        out_test = self.service.transform(X_test)
+
+        self.assertAlmostEqual(out_train["Air temperature [K]"].mean(), 0.0, places=10)
+        self.assertNotAlmostEqual(
+            out_test["Air temperature [K]"].mean(), 0.0, places=6
+        )
+
+        scaler = (
+            self.service._pipeline.named_steps["col_transformer"]
+            .named_transformers_["scaler"]
+        )
+        col = "Air temperature [K]"
+        self.assertAlmostEqual(scaler.mean_[0], X_train[col].mean(), places=10)
+        self.assertNotAlmostEqual(scaler.mean_[0], X_full[col].mean(), places=6)
 
 
 if __name__ == "__main__":

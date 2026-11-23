@@ -22,8 +22,8 @@
 | `Torque [Nm]` | float | Entrada |
 | `Tool wear [min]` | float | Entrada |
 | `Temp_diff` | float | Entrada derivada |
-| `Type_L` | int | Entrada One-Hot |
-| `Type_M` | int | Entrada One-Hot |
+| `Type_L` | float | Entrada One-Hot |
+| `Type_M` | float | Entrada One-Hot |
 | `Machine failure` | int | Objetivo |
 
 ## 3. Distribución de clases

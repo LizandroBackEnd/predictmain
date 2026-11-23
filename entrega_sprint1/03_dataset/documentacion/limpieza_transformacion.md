@@ -182,6 +182,8 @@ Variables categóricas validadas:
 | `Type` | L, M, H | 6,000 / 2,997 / 1,003 |
 | `Type_L`, `Type_M` | 0, 1 | 6,000 y 2,997 registros con valor 1, consistentes con `Type` |
 
+El escalador y el codificador se ajustan solo con el 80 % de entrenamiento (8,000 filas, división estratificada con `random_state=42`); el 20 % restante únicamente se transforma, sin re-ajuste. El CSV transformado conserva las 10,000 filas para trazabilidad.
+
 Variables excluidas:
 
 - `UDI` y `Product ID`: identificadores, no predictivos.
@@ -196,7 +198,11 @@ Resultado:
 | Variable objetivo | `Machine failure` |
 | Columnas de salida | 9 (8 variables + objetivo) |
 
-Evidencia: `data/processed/ai4i2020_transformed.csv` y `ml_service/artifacts/pipeline.joblib`.
+Evidencia: `data/processed/ai4i2020_transformed.csv`, `ml_service/artifacts/pipeline.joblib` y `reports/transformation_report.md`.
+
+### 3.6 Validación de la matriz (HU-07)
+
+La matriz final se exporta sin la variable objetivo en `data/processed/ai4i2020_features.csv` (`shape=(10000, 8)`). El comando `validate` verifica los seis criterios de aceptación (variables documentadas, objetivo separada, sin nulos, dtypes numéricos, sin fuga de información y dimensiones registradas) y genera `reports/matrix_validation_report.md` con la tabla ✔/✘ por criterio.
 
 ### 3.6 Etiqueta objetivo
 
@@ -234,18 +240,32 @@ Entorno: Python 3.11 o superior con las dependencias de `ml_service/requirements
 
 Desde `03_dataset/ml_service/`:
 
+<<<<<<< HEAD
+```powershell
+python -m src.cli ingest --csv ..\data\raw\ai4i2020.csv --manifest ..\data\raw\manifest.json
+python -m src.cli profile --csv ..\data\raw\ai4i2020.csv --report ..\data\profiling\data-profile-2026-11-11.md
+python -m src.cli treat --csv ..\data\raw\ai4i2020.csv --output ..\data\processed\ai4i2020_clean.csv --report ..\reports\null_report.md
+python -m src.cli outliers --csv ..\data\processed\ai4i2020_clean.csv --output ..\data\processed\ai4i2020_outlier_analyzed.csv --report ..\reports\outlier_report.md
+python -m src.cli transform --csv ..\data\processed\ai4i2020_outlier_analyzed.csv --output ..\data\processed\ai4i2020_transformed.csv --pipeline artifacts\pipeline.joblib --report ..\reports\transformation_report.md
+python -m src.cli apply --csv ..\data\raw\ai4i2020.csv --output ..\data\processed\ai4i2020_applied.csv --pipeline artifacts\pipeline.joblib
+python -m src.cli validate --csv ..\data\processed\ai4i2020_transformed.csv --matrix ..\data\processed\ai4i2020_features.csv --report ..\reports\matrix_validation_report.md
+=======
 ```bash
 python -m src.cli ingest --csv ../data/raw/ai4i2020.csv --manifest ../data/raw/manifest.json
 python -m src.cli profile --csv ../data/raw/ai4i2020.csv --report ../data/profiling/data-profile-2026-11-11.md
 python -m src.cli treat --csv ../data/raw/ai4i2020.csv --output ../data/processed/ai4i2020_clean.csv --report ../reports/null_report.md
 python -m src.cli outliers --csv ../data/processed/ai4i2020_clean.csv --output ../data/processed/ai4i2020_outlier_analyzed.csv --report ../reports/outlier_report.md
 python -m src.cli transform --csv ../data/processed/ai4i2020_outlier_analyzed.csv --output ../data/processed/ai4i2020_transformed.csv --pipeline artifacts/pipeline.joblib
+>>>>>>> b423e3e501c4b85e37df6a0819df1e5601bff01c
 ```
 
 > Las rutas deben indicarse explícitamente. Sin argumentos, el CLI resuelve la raíz del repositorio y escribiría sobre `data/` y `ml_service/` canónicos.
 
 La última ejecución se realizó en una copia temporal limpia de `03_dataset/`. Los CSV procesados, el manifiesto y `pipeline.joblib` resultantes fueron idénticos byte a byte a los de la entrega; los reportes solo difieren en la fecha de generación.
 
+<<<<<<< HEAD
+Las copias de los scripts en `03_dataset/ml_service/` se sincronizaron con el código principal tras la corrección anti-leakage (fit solo con entrenamiento). Los docstrings, strings, justificaciones de reportes y nombres de variables permanecen en su idioma original.
+=======
 Después, desde la raíz del repositorio:
 
 ```bash
@@ -259,3 +279,4 @@ Logs: `evidencias/pipeline_ejecucion.log` y `evidencias/validacion_dataset.log`.
 ## 7. Copias del código
 
 Las copias de `03_dataset/ml_service/` son idénticas a `ml_service/` canónico, incluidos comentarios y docstrings. La reconciliación lo verifica por SHA-256 archivo por archivo.
+>>>>>>> b423e3e501c4b85e37df6a0819df1e5601bff01c
