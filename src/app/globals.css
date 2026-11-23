@@ -1,8 +1,63 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #f4f4f1;
+  --panel: #ffffff;
+  --raised: #f0f0ec;
+  --sel: #e6e6e0;
+  --line: #d8d8d2;
+  --line-strong: #b8b8b0;
+  --fg: #16181a;
+  --fg-2: #5c6368;
+  --fg-3: #8a9196;
+  --btn-bg: #16181a;
+  --btn-fg: #f4f4f1;
+  --crit: #c45b4e;
+  --crit-fill: rgba(196, 91, 78, 0.12);
+  --warn: #b07a2a;
+  --warn-fill: rgba(176, 122, 42, 0.12);
+  --ok: #3f8a5a;
+  --risk: #3d7ea6;
+  --air: #3d7ea6;
+  --proc: #c4843a;
+  --rpm: #3f8a88;
+  --torque: #c46b5c;
+  --wear: #7a7a7a;
+  --grid: #ecece8;
+  --band-fill: rgba(61, 126, 166, 0.08);
+  --risk-fill: rgba(61, 126, 166, 0.18);
+  --background: var(--bg);
+  --foreground: var(--fg);
+}
+
+.dark {
+  --bg: #0b0c0d;
+  --panel: #131416;
+  --raised: #1b1d1f;
+  --sel: #272b2e;
+  --line: #2b2f32;
+  --line-strong: #3c4246;
+  --fg: #ececea;
+  --fg-2: #a6acb1;
+  --fg-3: #767d82;
+  --btn-bg: #ececea;
+  --btn-fg: #0b0c0d;
+  --crit: #f08d80;
+  --crit-fill: rgba(240, 141, 128, 0.1);
+  --warn: #e3a954;
+  --warn-fill: rgba(227, 169, 84, 0.1);
+  --ok: #79b58e;
+  --risk: #7fbae0;
+  --air: #7fbae0;
+  --proc: #e8ae69;
+  --rpm: #77b6b5;
+  --torque: #e5998a;
+  --wear: #b6b6b6;
+  --grid: #242829;
+  --band-fill: rgba(127, 186, 224, 0.055);
+  --risk-fill: rgba(127, 186, 224, 0.2);
+  --background: var(--bg);
+  --foreground: var(--fg);
 }
 
 @theme inline {
@@ -12,15 +67,8 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
 }
