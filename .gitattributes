@@ -1,0 +1,2 @@
+data/raw/*.csv text eol=lf
+entrega_sprint1/03_dataset/data/raw/*.csv text eol=lf

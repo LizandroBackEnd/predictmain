@@ -6,7 +6,7 @@
 
 ## 1. Enfoque del Sprint
 
-El sprint inicial tiene como meta la construcción, entrenamiento, evaluación y empaquetado del modelo predictivo base, así como la infraestructura de trazabilidad de datos sobre el conjunto *AI4I 2020 Predictive Maintenance Dataset*.
+El sprint inicial construye el corpus documental, la infraestructura de trazabilidad de datos, la preparación de características y la línea base predictiva del dataset *AI4I 2020 Predictive Maintenance Dataset*.
 
 ---
 
@@ -14,13 +14,16 @@ El sprint inicial tiene como meta la construcción, entrenamiento, evaluación y
 
 | ID | Historia de Usuario o Actividad | Descripción Sintética | Prioridad | Dependencia |
 | :--- | :--- | :--- | :---: | :---: |
-| **HU-01** | Recopilar e ingerir datos crudos | Importar y conservar el dataset original con trazabilidad inalterable en `data/raw/`. | **P0 — Crítica** | *Ninguna* |
-| **HU-02** | Estructurar y perfilar la telemetría | Validar esquema, tipos de datos, duplicados, rangos y estadísticas iniciales. | **P0 — Crítica** | HU-01 |
-| **HU-03** | Tratar valores faltantes y nulos | Gestionar nulos mediante reglas documentadas, reproducibles y pruebas unitarias. | **P0 — Crítica** | HU-02 |
-| **HU-04** | Analizar y gestionar valores atípicos | Evaluar outliers estadísticos sin eliminar señales físicas reales de falla. | **P0 — Crítica** | HU-02 |
-| **HU-05** | Construir el pipeline de transformación | Integrar codificación (One-Hot) y variables derivadas en un pipeline reproducible. | **P0 — Crítica** | HU-04 |
-| **HU-06** | Validar la matriz de características | Verificar dimensiones, tipos, nulos, variable objetivo y ausencia de fuga (*data leakage*). | **P0 — Crítica** | HU-05 |
-| **HU-07** | Preparar los datos y entrenar el modelo base | Dividir los datos (80/20 estratificado) y obtener una primera línea base de clasificación. | **P1 — Alta** | HU-06 |
+| **HU-01** | Construir el corpus documental | Extraer, limpiar y validar el PDF técnico canónico para el asistente RAG. | **Alta** | *Ninguna* |
+| **HU-02** | Recopilar e ingerir datos crudos | Importar y conservar el dataset original con trazabilidad inalterable en `data/raw/`. | **Crítica** | *Ninguna* |
+| **HU-03** | Estructurar y perfilar la telemetría | Validar esquema, tipos de datos, duplicados, rangos y estadísticas iniciales. | **Crítica** | HU-02 |
+| **HU-04** | Tratar valores faltantes y nulos | Gestionar nulos mediante reglas documentadas, reproducibles y pruebas unitarias. | **Crítica** | HU-03 |
+| **HU-05** | Analizar y gestionar valores atípicos | Evaluar outliers estadísticos sin eliminar señales físicas reales de falla. | **Crítica** | HU-03 |
+| **HU-06** | Construir el pipeline de transformación | Integrar codificación (One-Hot) y variables derivadas en un pipeline reproducible. | **Crítica** | HU-05 |
+| **HU-07** | Validar la matriz de características | Verificar dimensiones, tipos, nulos, variable objetivo y ausencia de fuga (*data leakage*). | **Crítica** | HU-06 |
+| **HU-08** | Preparar los datos y entrenar el modelo base | Dividir 75/25 estratificado, entrenar la línea base y registrar sus métricas. | **Alta** | HU-07 |
+
+> **Nota:** la división correcta de HU-08 es **75 % entrenamiento / 25 % prueba**, según el Taskboard. La referencia 80/20 de la versión histórica quedó superada.
 
 ## 2.1 Trazabilidad de tareas del Taskboard
 
@@ -31,29 +34,33 @@ El sprint inicial tiene como meta la construcción, entrenamiento, evaluación y
 | **#32** | HU-07 — Separar y validar la matriz de características | `ml_service/src/application/matrix_validation.py`, `ml_service/src/interfaces/cli/commands.py` (`run_validate_cmd`) | `data/processed/ai4i2020_features.csv`, `reports/matrix_validation_report.md` |
 | **#33** | HU-07 — Revisar calidad de datos y fuga de información | `ml_service/src/application/matrix_validation.py` (checks 3, 4 y 5), `ml_service/src/application/dataset_split.py` | `reports/matrix_validation_report.md` §2 |
 | **#34** | HU-07 — Generar reporte final de validación | `ml_service/src/infrastructure/reporting.py` (`build_matrix_validation_report`) | `reports/matrix_validation_report.md` |
+| **#35** | HU-08 — División estratégica y preparación del dataset | `ml_service/src/application/dataset_split.py` | `reports/model_baseline.md` §2 |
+| **#36** | HU-08 — Entrenamiento de modelos base y serialización | `ml_service/src/application/` (por implementar) | `ml_service/artifacts/modelo.joblib` |
+| **#37** | HU-08 — Evaluación de métricas y generación del reporte final | `ml_service/src/infrastructure/reporting.py` (por implementar) | `reports/model_baseline.md` |
 
-> La documentación histórica numera análisis de atípicos, transformación y validación como HU-04, HU-05 y HU-06; el Taskboard y el código usan HU-05, HU-06 y HU-07.
+> **Convención oficial:** HU-01 corpus; HU-02 ingesta; HU-03 perfilado; HU-04 nulos; HU-05 outliers; HU-06 transformación; HU-07 matriz; HU-08 entrenamiento. La documentación histórica usó un desfase de una posición: ingesta HU-01, perfilado HU-02, nulos HU-03, outliers HU-04, transformación HU-05, matriz HU-06 y entrenamiento HU-07.
 
 ---
 
 ## 3. Diagrama de Flujo de Dependencias (CRISP-DM)
 
 ```text
-[HU-01: Ingesta Cruda]
-        │
-        ▼
-[HU-02: Perfilado & Validación de Esquema]
-        │
-   ┌────┴─────────────────┐
-   ▼                      ▼
-[HU-03: Valores Nulos]  [HU-04: Outliers]
-                          │
-                          ▼
-                        [HU-05: Pipeline de Transformación]
-                          │
-                          ▼
-                        [HU-06: Matriz de Características]
-                          │
-                          ▼
-                        [HU-07: Entrenamiento Modelo Base]
+[HU-01: Corpus Documental] ─────────────┐
+                                        │ (evidencia para el asistente RAG)
+[HU-02: Ingesta Cruda]                  │
+        │                               │
+        ▼                               │
+[HU-03: Perfilado & Validación]         │
+   ┌────┴──────────────┐                │
+   ▼                   ▼                │
+[HU-04: Nulos]   [HU-05: Outliers]      │
+                   │                    │
+                   ▼                    │
+        [HU-06: Pipeline de Transformación]
+                   │
+                   ▼
+        [HU-07: Matriz de Características]
+                   │
+                   ▼
+        [HU-08: Entrenamiento Modelo Base]
 ```

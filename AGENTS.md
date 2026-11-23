@@ -74,7 +74,7 @@ predictmain/
 ├── prisma/
 │   └── schema.prisma               # Machines, Telemetry, and DocumentChunk models
 │
-├── data/                           # CRISP-DM Data Traceability (HU-01)
+├── data/                           # CRISP-DM Data Traceability (HU-02 a HU-07)
 │   ├── raw/                        # Original AI4I 2020 dataset (Read-only)
 │   └── processed/                  # Transformed datasets
 │

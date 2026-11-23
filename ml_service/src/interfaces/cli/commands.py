@@ -26,7 +26,7 @@ from src.infrastructure.reporting import (
 def run_ingestion_cmd(csv_path: Path, manifest_path: Path) -> int:
     """Execute raw dataset ingestion and manifest generation."""
     print("=" * 60)
-    print("🚀 PredictMain — HU-01: Ingesta de Datos Crudos")
+    print("🚀 PredictMain — HU-02: Ingesta de Datos Crudos")
     print("=" * 60)
     print(f"Dataset CSV:    {csv_path}")
     print(f"Manifest JSON:  {manifest_path}\n")
@@ -49,7 +49,7 @@ def run_ingestion_cmd(csv_path: Path, manifest_path: Path) -> int:
 def run_profiling_cmd(csv_path: Path, report_path: Path) -> int:
     """Execute dataset profiling and documentation generation."""
     print("=" * 60)
-    print("📊 PredictMain — HU-02: Perfilado de Telemetría Histórica")
+    print("📊 PredictMain — HU-03: Perfilado de Telemetría Histórica")
     print("=" * 60)
     print(f"Dataset CSV:    {csv_path}")
     print(f"Reporte MD:     {report_path}\n")

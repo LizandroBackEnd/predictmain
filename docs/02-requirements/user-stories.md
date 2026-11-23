@@ -1,17 +1,33 @@
 # Historias de Usuario - PredictMain
 
-> Especificación de Historias de Usuario (HU-01 a HU-07) bajo metodología CRISP-DM.
+> Especificación de Historias de Usuario (HU-01 a HU-08) bajo metodología CRISP-DM.
 
-> **Convención de numeración:** el Taskboard y el código identifican el análisis de atípicos como **HU-05** y el pipeline de transformación como **HU-06**; en este documento histórico aparecen como HU-04 y HU-05 respectivamente.
+> **Convención oficial:** esta numeración es la del Taskboard y se usa en código, reportes y documentación. Equivalencia con la numeración histórica: HU-01 (corpus) es nueva; HU-02=HU-01, HU-03=HU-02, HU-04=HU-03, HU-05=HU-04, HU-06=HU-05, HU-07=HU-06 y HU-08=HU-07.
 
 ---
 
-## HU-01: Recopilar e Ingerir Datos Crudos
+## HU-01: Construir el corpus documental
+
+- **Rol:** Como ingeniero de conocimiento
+- **Acción:** Quiero recopilar, extraer y depurar la documentación técnica fuente
+- **Beneficio:** Para disponer de un corpus trazable que sustente el asistente RAG.
+- **Prioridad:** **Alta**
+
+### Criterios de Aceptación
+1. El PDF original se conserva sin modificaciones y con su SHA-256 registrado.
+2. El texto extraído, limpio y normalizado queda versionado en `entrega_sprint1/02_corpus/salidas/`.
+3. Se eliminan duplicados, caracteres irrelevantes y ruido, con evidencia reproducible.
+4. La validación de calidad del corpus termina correctamente y se documenta.
+5. La proveniencia del corpus queda trazable en la matriz de requisitos.
+
+---
+
+## HU-02: Recopilar e Ingerir Datos Crudos
 
 - **Rol:** Como ingeniero de datos
 - **Acción:** Quiero automatizar la descarga, carga e ingesta del dataset histórico en una estructura controlada
 - **Beneficio:** Para asegurar que el equipo trabaje sobre una fuente base inalterable, trazable y versionada.
-- **Prioridad:** **P0 — Crítica**
+- **Prioridad:** **Crítica**
 
 ### Criterios de Aceptación
 1. Existe un script o proceso automatizado en Python que importa los datos desde la fuente oficial o repositorio autorizado.
@@ -23,12 +39,12 @@
 
 ---
 
-## HU-02: Estructurar Tipos de Datos y Perfilar la Telemetría Histórica
+## HU-03: Estructurar Tipos de Datos y Perfilar la Telemetría Histórica
 
 - **Rol:** Como científico de datos
 - **Acción:** Quiero analizar y documentar los tipos de datos, el esquema y los metadatos de la telemetría
 - **Beneficio:** Para conocer la calidad y consistencia técnica de las variables antes de transformarlas.
-- **Prioridad:** **P0 — Crítica**
+- **Prioridad:** **Crítica**
 
 ### Criterios de Aceptación
 1. Se documentan los tipos de datos numéricos, categóricos, booleanos y de identificación de cada columna.
@@ -39,12 +55,12 @@
 
 ---
 
-## HU-03: Tratar Valores Faltantes y Nulos
+## HU-04: Tratar Valores Faltantes y Nulos
 
 - **Rol:** Como científico de datos
 - **Acción:** Quiero identificar y gestionar los valores faltantes de la telemetría
 - **Beneficio:** Para evitar errores de ejecución y sesgos durante el entrenamiento.
-- **Prioridad:** **P0 — Crítica**
+- **Prioridad:** **Crítica**
 
 ### Criterios de Aceptación
 1. Se cuantifican los valores faltantes por columna y por registro antes de aplicar cualquier tratamiento.
@@ -56,12 +72,12 @@
 
 ---
 
-## HU-04: Analizar y Gestionar Valores Atípicos
+## HU-05: Analizar y Gestionar Valores Atípicos
 
 - **Rol:** Como científico de datos
 - **Acción:** Quiero analizar los valores atípicos de los sensores
 - **Beneficio:** Para decidir justificadamente si se conservan, transforman o excluyen sin alterar la realidad física de la maquinaria.
-- **Prioridad:** **P0 — Crítica**
+- **Prioridad:** **Crítica**
 
 ### Criterios de Aceptación
 1. Los valores atípicos no se eliminan automáticamente.
@@ -73,12 +89,12 @@
 
 ---
 
-## HU-05: Construir el Pipeline de Transformación
+## HU-06: Construir el Pipeline de Transformación
 
 - **Rol:** Como científico de datos
 - **Acción:** Quiero integrar las transformaciones de las variables en un pipeline automatizado
 - **Beneficio:** Para aplicar el mismo procesamiento durante el entrenamiento y la predicción.
-- **Prioridad:** **P0 — Crítica**
+- **Prioridad:** **Crítica**
 
 ### Criterios de Aceptación
 1. Las variables categóricas se codifican mediante One-Hot Encoding u otra técnica justificada.
@@ -90,12 +106,12 @@
 
 ---
 
-## HU-06: Validar la Matriz de Características
+## HU-07: Validar la Matriz de Características
 
 - **Rol:** Como científico de datos
 - **Acción:** Quiero validar la matriz final de características y la variable objetivo
 - **Beneficio:** Para asegurar que los datos estén preparados correctamente antes del entrenamiento.
-- **Prioridad:** **P0 — Crítica**
+- **Prioridad:** **Crítica**
 
 ### Criterios de Aceptación
 1. La matriz final contiene las variables documentadas.
@@ -108,18 +124,21 @@
 
 ---
 
-## HU-07: Preparar los Datos y Entrenar el Modelo Base
+## HU-08: Preparar los Datos y Entrenar el Modelo Base
 
 - **Rol:** Como científico de datos
 - **Acción:** Quiero dividir los datos y entrenar un modelo base de clasificación
-- **Beneficio:** Para establecer una primera línea de predicción del riesgo de falla.
-- **Prioridad:** **P1 — Alta**
+- **Beneficio:** Para establecer una primera línea base de predicción del riesgo de falla.
+- **Prioridad:** **Alta**
 
 ### Criterios de Aceptación
-1. El dataset se divide en 80 % para entrenamiento y 20 % para prueba.
+1. El dataset se divide en 75 % para entrenamiento y 25 % para prueba.
 2. La división es estratificada cuando existe desbalance entre las clases de falla.
 3. Se define una semilla aleatoria fija (*random_state*) para reproducir la división.
-4. Se entrena al menos un modelo base de clasificación.
-5. El modelo utiliza el pipeline de transformación definido en la HU-05.
-6. El código se ejecuta de principio a fin sin errores en el entorno configurado.
-7. Se generan predicciones iniciales sobre el conjunto de prueba para su evaluación métrica.
+4. Se entrena al menos un modelo de clasificación utilizando el pipeline de transformación de HU-06.
+5. Se generan predicciones iniciales sobre el conjunto de prueba.
+6. El código se ejecuta sin errores y el resultado del entrenamiento queda registrado para su evaluación posterior.
+
+### Entregable
+- `ml_service/artifacts/modelo.joblib`: clasificador ajustado con los datos de entrenamiento, listo para predecir el riesgo de falla.
+- `reports/model_baseline.md`: reporte con la tabla comparativa de accuracy, precision, recall, F1 y ROC-AUC de los dos modelos.

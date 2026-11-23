@@ -1,6 +1,6 @@
 {
   "dataset": {
-    "path": "03_dataset/data/processed/ai4i2020_transformed.csv",
+    "path": "03_dataset/data/processed/ai4i2020_outlier_analyzed.csv",
     "target": "Machine failure",
     "features": [
       "Air temperature [K]",
@@ -17,52 +17,51 @@
     "negative_class": 9661
   },
   "split": {
-    "train": 0.70,
-    "validation": 0.15,
-    "test": 0.15,
-    "stratify_by": ["Machine failure", "Type"],
-    "random_state": 42
+    "train": 0.75,
+    "test": 0.25,
+    "stratify_by": ["Machine failure"],
+    "random_state": 42,
+    "note": "HU-08 usa 75/25 estratificado; la propuesta histórica 70/15/15 no se ejecutó."
   },
   "preprocessing": {
     "pipeline_artifact": "03_dataset/ml_service/artifacts/pipeline.joblib",
+    "refit_on_train": true,
     "scaler": "StandardScaler",
     "encoder": "OneHotEncoder(drop='first')",
     "derived_features": ["Temp_diff"],
-    "excluded_features": ["UDI", "Product ID", "TWF", "HDF", "PWF", "OSF", "RNF"]
+    "excluded_features": ["UDI", "Product ID", "TWF", "HDF", "PWF", "OSF", "RNF"],
+    "note": "La definición es HU-06; HU-08 reajusta el pipeline solo con el 75% de entrenamiento para evitar fuga."
   },
   "models": [
     {
       "name": "logistic_regression",
       "class_weight": "balanced",
-      "max_iter": 1000
+      "max_iter": 1000,
+      "role": "línea base interpretable"
     },
     {
       "name": "random_forest",
       "class_weight": "balanced",
       "n_estimators": 300,
-      "random_state": 42
-    },
-    {
-      "name": "gradient_boosting",
-      "random_state": 42
-    },
-    {
-      "name": "hist_gradient_boosting",
-      "random_state": 42
+      "random_state": 42,
+      "role": "comparación principal para datos tabulares"
     }
   ],
   "cross_validation": {
     "strategy": "StratifiedKFold",
     "folds": 5,
     "shuffle": true,
-    "random_state": 42
+    "random_state": 42,
+    "status": "diferido_a_iteracion_posterior"
   },
   "threshold": {
     "initial": 0.5,
-    "optimize_on": "validation",
-    "priority_metric": "recall"
+    "optimize_on": "ninguno_en_linea_base",
+    "priority_metric": "recall",
+    "note": "Sin conjunto de validación en HU-08; la optimización del umbral se difiere."
   },
   "metrics": [
+    "accuracy",
     "precision",
     "recall",
     "f1",
@@ -70,9 +69,14 @@
     "pr_auc",
     "confusion_matrix"
   ],
+  "selection": {
+    "primary": "f1",
+    "tie_breaker": "recall"
+  },
   "artifacts": {
     "model_output_dir": "ml_service/artifacts",
-    "metrics_report": "05_entrenamiento/evidencias/metricas_modelos.md"
+    "model_output_file": "ml_service/artifacts/modelo.joblib",
+    "metrics_report": "reports/model_baseline.md"
   },
   "llm_adaptation": {
     "strategy": "rag_prompt_engineering",

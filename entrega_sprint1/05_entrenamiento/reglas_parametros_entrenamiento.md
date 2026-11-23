@@ -25,15 +25,15 @@ Este documento define las reglas y los parámetros para dos componentes:
 | Tarea | Clasificación binaria | `Machine failure` es 0/1. |
 | Variable objetivo | `Machine failure` | Etiqueta oficial del dataset. |
 | Variables de entrada | 8 | Cinco sensores, `Temp_diff`, `Type_L`, `Type_M`. |
-| Partición | 70% entrenamiento, 15% validación, 15% prueba | Permite ajuste y evaluación independiente. |
-| Estratificación | `Machine failure` y `Type` | Conserva proporciones de clases y tipos. |
+| Partición | 75% entrenamiento, 25% prueba | Criterio de HU-08; la propuesta 70/15/15 no se ejecutó. |
+| Estratificación | `Machine failure` | Conserva la proporción de fallas en ambas particiones. |
 | Semilla | `42` | Reproducibilidad. |
-| Validación cruzada | `StratifiedKFold`, 5 particiones | Estabilidad con clases desbalanceadas. |
-| Desbalance | `class_weight='balanced'` cuando aplique | Evita ignorar la clase minoritaria. |
-| Umbral inicial | `0.5` | Punto de partida; se ajusta en validación. |
+| Validación cruzada | `StratifiedKFold`, 5 particiones | Diferida a una iteración posterior. |
+| Desbalance | `class_weight='balanced'` cuando aplique | Evita ignorar la clase minoritaria sin SMOTE. |
+| Umbral inicial | `0.5` | Punto de partida fijo en la línea base. |
 | Prioridad de umbral | Recall | Una falla no detectada es más costosa. |
-| Métricas | Precision, recall, F1, ROC-AUC, PR-AUC, matriz de confusión | Evaluación completa del desbalance. |
-| Modelos candidatos | Regresión logística, Random Forest, Gradient Boosting, HistGradientBoosting | Comparación de líneas base e modelos no lineales. |
+| Métricas | Accuracy, precision, recall, F1, ROC-AUC, PR-AUC, matriz de confusión | Evaluación completa del desbalance; accuracy no se usa sola. |
+| Modelos candidatos | Regresión logística y Random Forest | Línea base interpretable y referencia robusta para datos tabulares. |
 
 ## 4. Parámetros de adaptación del LLM
 
@@ -61,7 +61,7 @@ Los valores iniciales dentro de cada rango están fijados en `config_entrenamien
 | Prompt Engineering | Necesario para definir conducta, formato y límites. | **Sí**, como base. |
 | RAG | Permite usar el corpus sin reentrenar y citar fuentes. | **Sí**, estrategia principal. |
 | Fine-tuning | No hay dataset de pares consulta-respuesta; el corpus cambia. | **No** en Sprint 1. |
-| Ajuste de umbral | Mejora recall sin reentrenar. | **Sí**, en validación. |
+| Ajuste de umbral | Mejora recall sin reentrenar. | **Diferido** hasta disponer de un conjunto de validación. |
 
 La combinación elegida es **RAG + Prompt Engineering** para el agente y **entrenamiento supervisado clásico** para el clasificador.
 

@@ -37,7 +37,7 @@ def build_profiling_report(summary: DatasetSummary, filename: str) -> str:
     lines: list[str] = [
         f"# Reporte de Perfilado de Telemetría Histórica — {filename}",
         "",
-        "> Documento generado automáticamente por el servicio de perfilado de PredictMain (HU-02).",
+        "> Documento generado automáticamente por el servicio de perfilado de PredictMain (HU-03).",
         "",
         "---",
         "",

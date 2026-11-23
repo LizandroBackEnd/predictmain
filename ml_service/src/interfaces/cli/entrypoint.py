@@ -27,12 +27,12 @@ def build_parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="command", help="Comando a ejecutar")
 
     # Ingestion command
-    ingest = subparsers.add_parser("ingest", help="Ejecutar ingesta y generar manifest.json (HU-01)")
+    ingest = subparsers.add_parser("ingest", help="Ejecutar ingesta y generar manifest.json (HU-02)")
     ingest.add_argument("--csv", type=Path, default=paths.raw_csv_path, help="Ruta al archivo CSV crudo")
     ingest.add_argument("--manifest", type=Path, default=paths.manifest_path, help="Ruta al manifest JSON de salida")
 
     # Profiling command
-    profile = subparsers.add_parser("profile", help="Ejecutar perfilado estadístico y generar reporte (HU-02)")
+    profile = subparsers.add_parser("profile", help="Ejecutar perfilado estadístico y generar reporte (HU-03)")
     profile.add_argument("--csv", type=Path, default=paths.raw_csv_path, help="Ruta al archivo CSV crudo a perfilar")
     profile.add_argument("--report", type=Path, default=paths.get_profile_report_path(), help="Ruta al reporte Markdown de salida")
 

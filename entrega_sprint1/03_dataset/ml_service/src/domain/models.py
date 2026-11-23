@@ -203,7 +203,6 @@ class TransformationResult:
     rows: int
     feature_columns: list[str]
     pipeline_path: str | None   # None if not saved yet
-<<<<<<< HEAD
 
 
 @dataclass(frozen=True)
@@ -251,5 +250,3 @@ class MatrixValidationResult:
     @property
     def passed(self) -> bool:
         return all(check.passed for check in self.checks)
-=======
->>>>>>> b423e3e501c4b85e37df6a0819df1e5601bff01c

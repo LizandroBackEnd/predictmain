@@ -41,7 +41,7 @@ raíz del repositorio.
 | Elemento | Motivo | Responsable de la siguiente acción |
 |---|---|---|
 | Exportación de la documentación a PDF | Se decidió entregar Markdown versionable; la exportación es una actividad posterior de presentación. | Equipo PredictMain, antes de la entrega formal |
-| Entrenamiento de modelos y `05_entrenamiento/evidencias/metricas_modelos.md` | Sprint 1 define objetivo, estrategia y parámetros; la ejecución figura como `pending_execution` en `05_entrenamiento/config_entrenamiento.json`. | Equipo PredictMain, Sprint 2 |
+| Entrenamiento de modelos y `reports/model_baseline.md` | HU-08 define objetivo, estrategia y parámetros; la ejecución figura como `pending_execution` en `05_entrenamiento/config_entrenamiento.json`. | Equipo PredictMain, HU-08 |
 | Implementación del flujo RAG y del agente | El diseño figura como `designed_pending_implementation`; la integración con pgvector y la API pertenece al núcleo Next.js. | Equipo PredictMain, Sprint 2 |
 
 ## 3. Conflictos detectados y resolución
