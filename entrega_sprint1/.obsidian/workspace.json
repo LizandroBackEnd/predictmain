@@ -1,0 +1,211 @@
+{
+  "main": {
+    "id": "8fbcdb2a86adb572",
+    "type": "split",
+    "children": [
+      {
+        "id": "390be5c8d27f42ac",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "4f15865e7923adb0",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "Nueva pestaña"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "5a90b85081328500",
+    "type": "split",
+    "children": [
+      {
+        "id": "89954fca304e3582",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "270baa045a32ab93",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Explorador de archivos"
+            }
+          },
+          {
+            "id": "5283a76714a7dbbe",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Buscar"
+            }
+          },
+          {
+            "id": "87e60586988cfe15",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-bookmark",
+              "title": "Marcadores"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "6627d5e037cf6d34",
+    "type": "split",
+    "children": [
+      {
+        "id": "eba9acd0a9a1997f",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "01d3b5fbe95aeb5e",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "01_vision/matriz_trazabilidad_requisitos.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Enlaces entrantes"
+            }
+          },
+          {
+            "id": "3107b56d14395989",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "01_vision/matriz_trazabilidad_requisitos.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Enlaces salientes"
+            }
+          },
+          {
+            "id": "75b9f8c8590d87e3",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Etiquetas"
+            }
+          },
+          {
+            "id": "7e0ce886407ba942",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "Todas las propiedades"
+            }
+          },
+          {
+            "id": "58d266f571b30dcd",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "01_vision/matriz_trazabilidad_requisitos.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Esquema"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Abrir selector rápido": false,
+      "graph:Abrir vista gráfica": false,
+      "canvas:Crear nuevo lienzo": false,
+      "daily-notes:Abrir la nota de hoy": false,
+      "templates:Insertar plantilla": false,
+      "command-palette:Abrir paleta de comandos": false,
+      "bases:Crear nueva base": false
+    }
+  },
+  "active": "270baa045a32ab93",
+  "lastOpenFiles": [
+    "05_entrenamiento/config_entrenamiento.md",
+    "05_entrenamiento/reglas_parametros_entrenamiento.md",
+    "05_entrenamiento/dataset_entrenamiento.md",
+    "05_entrenamiento/criterios_fuentes.md",
+    "05_entrenamiento/reglas_consulta_respuesta.md",
+    "05_entrenamiento/system_prompt.md",
+    "05_entrenamiento/estrategia_entrenamiento.md",
+    "05_entrenamiento/objetivo_modelo.md",
+    "04_etiquetado/evidencias/validacion_etiquetado.md",
+    "04_etiquetado/validacion_etiquetado.md",
+    "04_etiquetado/muestra_etiquetada.md",
+    "04_etiquetado/reglas_etiquetado.md",
+    "04_etiquetado/catalogo_etiquetas.md",
+    "03_dataset/evidencias/comparativa_datasets.md",
+    "03_dataset/evidencias/validaciondataset.md",
+    "03_dataset/evidencias/pipeline_ejecucion.md",
+    "03_dataset/evidencias/validacion_dataset.md",
+    "03_dataset/reports/outlier_report.md",
+    "03_dataset/reports/null_report.md",
+    "03_dataset/documentacion/limpieza_transformacion.md",
+    "01_vision/matriz_trazabilidad_requisitos.md"
+  ]
+}
