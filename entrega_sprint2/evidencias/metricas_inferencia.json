@@ -1,0 +1,74 @@
+{
+  "casos": 13,
+  "correctos": 10,
+  "parciales": 0,
+  "fallidos": 3,
+  "latencia_media_ms": 26.992,
+  "detalle": [
+    {
+      "id": 1,
+      "probabilidad": 0.0,
+      "resultado": "✓"
+    },
+    {
+      "id": 2,
+      "probabilidad": 1.0,
+      "resultado": "✓"
+    },
+    {
+      "id": 3,
+      "probabilidad": 1.0,
+      "resultado": "✓"
+    },
+    {
+      "id": 4,
+      "probabilidad": 1.0,
+      "resultado": "✓"
+    },
+    {
+      "id": 5,
+      "probabilidad": 0.02,
+      "resultado": "✓"
+    },
+    {
+      "id": 6,
+      "probabilidad": 0.2633333333333333,
+      "resultado": "✓"
+    },
+    {
+      "id": 7,
+      "probabilidad": 0.52,
+      "resultado": "✗"
+    },
+    {
+      "id": 8,
+      "probabilidad": 0.35333333333333333,
+      "resultado": "✗"
+    },
+    {
+      "id": 9,
+      "probabilidad": 0.3,
+      "resultado": "✗"
+    },
+    {
+      "id": 10,
+      "probabilidad": null,
+      "resultado": "✓"
+    },
+    {
+      "id": 11,
+      "probabilidad": null,
+      "resultado": "✓"
+    },
+    {
+      "id": 12,
+      "probabilidad": null,
+      "resultado": "✓"
+    },
+    {
+      "id": 13,
+      "probabilidad": null,
+      "resultado": "✓"
+    }
+  ]
+}
